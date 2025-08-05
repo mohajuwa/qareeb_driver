@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "1048285519214",
+    "project_id": "qareeb-79bcf",
+    "storage_bucket": "qareeb-79bcf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048285519214:android:4e193df7b9e83311e3b57f",
+        "android_client_info": {
+          "package_name": "com.modwir.ecom_modwir"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDproDOArrR57D0uFz8MeVaaGHXKlCP_Rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048285519214:android:fddb43968b7e65b2e3b57f",
+        "android_client_info": {
+          "package_name": "com.qareeb.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDproDOArrR57D0uFz8MeVaaGHXKlCP_Rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048285519214:android:cc356bea58567642e3b57f",
+        "android_client_info": {
+          "package_name": "com.qareeb.rider"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDproDOArrR57D0uFz8MeVaaGHXKlCP_Rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
