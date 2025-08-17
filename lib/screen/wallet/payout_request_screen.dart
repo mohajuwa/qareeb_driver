@@ -224,7 +224,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
                                                         .payoutData[index]
                                                         .status ==
                                                     "1"
-                                                ? const Text(
+                                                ? Text(
                                                     "Completed",
                                                     maxLines: 1,
                                                     style: TextStyle(
@@ -254,7 +254,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
                                                     "1"
                                                 ? Text(
                                                     "${getData.read("Currency")}${payoutDetailController.payoutDetailModel!.payoutData[index].amount}",
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                       color: Colors.green,
                                                       fontFamily:
                                                           FontFamily.gilroyBold,
@@ -349,7 +349,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
                   ? Text(
                       "Completed".tr,
                       maxLines: 1,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.green,
                         fontFamily: FontFamily.gilroyBold,
                         overflow: TextOverflow.ellipsis,
@@ -484,7 +484,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
         const SizedBox(width: 5),
         Text(
           subtitle ?? "",
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: FontFamily.gilroyBold,
             fontSize: 14,
             color: Colors.grey,

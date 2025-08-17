@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:qareeb/utils/font_family.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:qareeb/config/config.dart';
 import 'package:qareeb/screen/auth_screen/splash_screen.dart';
@@ -29,8 +30,13 @@ void main() async {
         translations: LocaleString(),
         locale: getData.read("lan2") != null
             ? Locale(getData.read("lan2"), getData.read("lan1"))
-            : const Locale('en_US', 'en_US'),
+            : const Locale('ar', 'ar_US'),
         theme: ThemeData(
+          // This sets the default font for the app.
+          // The new FontFamily class will handle specific overrides.
+          fontFamily: FontFamily.isArabic == true
+              ? FontFamily.kherbatFont
+              : FontFamily.gilroyRegular,
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
           hoverColor: Colors.transparent,

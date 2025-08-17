@@ -18,9 +18,10 @@ import 'dart:math' as math;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../auth_screen/splash_screen.dart';
 
-class MapLocationUpdateController extends GetxController implements GetxService {
-
-  UpdateLocationController updateLocationController = Get.put(UpdateLocationController());
+class MapLocationUpdateController extends GetxController
+    implements GetxService {
+  UpdateLocationController updateLocationController =
+      Get.put(UpdateLocationController());
 
   List<PointLatLng> dropOffPoints = [];
   Map<MarkerId, Marker> markers11 = {};
@@ -31,7 +32,6 @@ class MapLocationUpdateController extends GetxController implements GetxService 
   late IO.Socket socket;
   double carDegree = 0.0;
 
-
   @override
   void onInit() {
     super.onInit();
@@ -39,7 +39,10 @@ class MapLocationUpdateController extends GetxController implements GetxService 
   }
 
   void _initializeSocket() {
-    socket = IO.io(Config.socketUrl, <String, dynamic>{'transports': ['websocket'], 'autoConnect': false});
+    socket = IO.io(Config.socketUrl, <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false
+    });
     socket.connect();
   }
 
@@ -48,19 +51,27 @@ class MapLocationUpdateController extends GetxController implements GetxService 
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium);
   }
 
   void startLiveTracking() {
     positionStreamSubscription = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 15),
+      locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.bestForNavigation, distanceFilter: 15),
     ).listen((Position position) {
       movingLat = position.latitude;
       movingLong = position.longitude;
 
-      updateMarker(LatLng(position.latitude, position.longitude), "origin", "assets/image/1724501643194download91.png");
-      getDirections11(lat1: PointLatLng(position.latitude, position.longitude), dropOffPoints: dropOffPoints,);
-      carDegree = calculateDegrees(LatLng(position.latitude, position.longitude), LatLng(position.latitude, position.longitude));
+      updateMarker(LatLng(position.latitude, position.longitude), "origin",
+          "assets/image/1724501643194download91.png");
+      getDirections11(
+        lat1: PointLatLng(position.latitude, position.longitude),
+        dropOffPoints: dropOffPoints,
+      );
+      carDegree = calculateDegrees(
+          LatLng(position.latitude, position.longitude),
+          LatLng(position.latitude, position.longitude));
       sendLiveLocation(position.latitude, position.longitude);
     });
   }
@@ -84,7 +95,8 @@ class MapLocationUpdateController extends GetxController implements GetxService 
       'long': long1.toString(),
       'status': "off"
     });
-    updateLocationController.updateLocationAPi(lat: lat1.toString(), long: long1.toString(), status: "off");
+    updateLocationController.updateLocationAPi(
+        lat: lat1.toString(), long: long1.toString(), status: "off");
   }
 
   void sendLiveLocation(double lat1, double long1) {
@@ -100,12 +112,16 @@ class MapLocationUpdateController extends GetxController implements GetxService 
 
   Future<Uint8List> getImages11(String path, int width) async {
     ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetHeight: width);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetHeight: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
-  Future<Uint8List> resizeImage(Uint8List data, {required int targetWidth, required int targetHeight}) async {
+  Future<Uint8List> resizeImage(Uint8List data,
+      {required int targetWidth, required int targetHeight}) async {
     // Decode the image
     final ui.Codec codec = await ui.instantiateImageCodec(data);
     final ui.FrameInfo frameInfo = await codec.getNextFrame();
@@ -135,27 +151,36 @@ class MapLocationUpdateController extends GetxController implements GetxService 
 
     // Paint image
     final Paint paint = Paint()..isAntiAlias = true;
-    canvas.drawImageRect(frameInfo.image, Rect.fromLTWH(0.0, 0.0, originalWidth.toDouble(), originalHeight.toDouble()), rect, paint);
+    canvas.drawImageRect(
+        frameInfo.image,
+        Rect.fromLTWH(
+            0.0, 0.0, originalWidth.toDouble(), originalHeight.toDouble()),
+        rect,
+        paint);
 
-    final ui.Image resizedImage = await recorder.endRecording().toImage(resizedWidth, resizedHeight);
+    final ui.Image resizedImage =
+        await recorder.endRecording().toImage(resizedWidth, resizedHeight);
 
-    final ByteData? resizedByteData = await resizedImage.toByteData(format: ImageByteFormat.png);
+    final ByteData? resizedByteData =
+        await resizedImage.toByteData(format: ImageByteFormat.png);
     return resizedByteData!.buffer.asUint8List();
   }
 
-  Future<Uint8List> getNetworkImage(String path, {int targetWidth = 80, int targetHeight = 80}) async {
+  Future<Uint8List> getNetworkImage(String path,
+      {int targetWidth = 80, int targetHeight = 80}) async {
     final completer = Completer<ImageInfo>();
     var image = AssetImage(path);
     image.resolve(const ImageConfiguration()).addListener(
-      ImageStreamListener((info, _) => completer.complete(info)),
-    );
+          ImageStreamListener((info, _) => completer.complete(info)),
+        );
     final ImageInfo imageInfo = await completer.future;
 
     final ByteData? byteData = await imageInfo.image.toByteData(
       format: ImageByteFormat.png,
     );
 
-    Uint8List resizedImage = await resizeImage(Uint8List.view(byteData!.buffer), targetWidth: targetWidth, targetHeight: targetHeight);
+    Uint8List resizedImage = await resizeImage(Uint8List.view(byteData!.buffer),
+        targetWidth: targetWidth, targetHeight: targetHeight);
     return resizedImage;
   }
 
@@ -164,22 +189,20 @@ class MapLocationUpdateController extends GetxController implements GetxService 
     final Uint8List markIcon = await getNetworkImage(imageUrl);
     MarkerId markerId = MarkerId(id);
     Marker marker = Marker(
-      markerId: markerId,
-      icon: BitmapDescriptor.fromBytes(markIcon),
-      position: position,
+        markerId: markerId,
+        icon: BitmapDescriptor.fromBytes(markIcon),
+        position: position,
         rotation: carDegree,
-        anchor: const Offset(0.5, 0.5)
-    );
+        anchor: const Offset(0.5, 0.5));
     print("2222222222222222222");
     markers11[markerId] = marker;
-
 
     if (markers11.containsKey(markerId)) {
       final Marker oldMarker = markers11[markerId]!;
       print("3333333333333333333");
       // Create a new marker with the updated position, keeping other properties same
       final Marker updatedMarker = oldMarker.copyWith(
-        positionParam: position,  // Update the marker's position
+        positionParam: position, // Update the marker's position
       );
 
       // setState(() {
@@ -193,7 +216,8 @@ class MapLocationUpdateController extends GetxController implements GetxService 
   }
 
   Future addMarker2(LatLng position, String id) async {
-    final Uint8List markIcon = await getNetworkImage("assets/image/pick_up.png");
+    final Uint8List markIcon =
+        await getNetworkImage("assets/image/pick_up.png");
     MarkerId markerId = MarkerId(id);
     Marker marker = Marker(
       markerId: markerId,
@@ -214,8 +238,10 @@ class MapLocationUpdateController extends GetxController implements GetxService 
     }
   }
 
-  Future addMarkerCurrent(LatLng position, String id, BitmapDescriptor descriptor) async {
-    final Uint8List markIcon = await getNetworkImage("assets/image/pick_up.png");
+  Future addMarkerCurrent(
+      LatLng position, String id, BitmapDescriptor descriptor) async {
+    final Uint8List markIcon =
+        await getNetworkImage("assets/image/pick_up.png");
     MarkerId markerId = MarkerId(id);
     Marker marker = Marker(
       markerId: markerId,
@@ -231,17 +257,18 @@ class MapLocationUpdateController extends GetxController implements GetxService 
   addMarker3(String id) async {
     for (int a = 0; a < dropOffPoints.length; a++) {
       final Uint8List markIcon = await getNetworkImage("assets/image/drop.png");
-      MarkerId markerId = MarkerId(id[a]);
 
-      LatLng position = LatLng(dropOffPoints[a].latitude, dropOffPoints[a].longitude);
+      // ✅ CORRECT: Create a unique ID like "destination_0", "destination_1", etc.
+      MarkerId markerId = MarkerId('${id}_$a');
+
+      LatLng position =
+          LatLng(dropOffPoints[a].latitude, dropOffPoints[a].longitude);
 
       Marker marker = Marker(
         markerId: markerId,
         icon: BitmapDescriptor.fromBytes(markIcon),
         position: position,
-        onTap: () {
-          // Add any desired behavior for when the marker is tapped
-        },
+        onTap: () {},
       );
 
       markers11[markerId] = marker;
@@ -259,7 +286,9 @@ class MapLocationUpdateController extends GetxController implements GetxService 
     polylines11[id] = polyline;
   }
 
-  Future getDirections11({required PointLatLng lat1, required List<PointLatLng> dropOffPoints}) async {
+  Future getDirections11(
+      {required PointLatLng lat1,
+      required List<PointLatLng> dropOffPoints}) async {
     List<LatLng> polylineCoordinates = [];
     List<PointLatLng> allPoints = [lat1, ...dropOffPoints];
 
@@ -268,10 +297,12 @@ class MapLocationUpdateController extends GetxController implements GetxService 
       PointLatLng point2 = allPoints[i + 1];
 
       PolylineResult result = await polylinePoints11.getRouteBetweenCoordinates(
-        Config.mapKey,
-        point1,
-        point2,
-        travelMode: TravelMode.driving,
+        request: PolylineRequest(
+          origin: point1,
+          destination: point2,
+          mode: TravelMode.driving,
+        ),
+        googleApiKey: Config.mapKey,
       );
 
       if (result.points.isNotEmpty) {
@@ -307,8 +338,4 @@ class MapLocationUpdateController extends GetxController implements GetxService 
   static double toDegrees(double radians) {
     return radians * (180.0 / math.pi);
   }
-
 }
-
-
-

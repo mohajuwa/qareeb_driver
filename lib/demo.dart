@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
 
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
@@ -29,7 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             // DefaultTextStyle.merge(
-            //   style: const TextStyle(color: Colors.white),
+            //   style: TextStyle(color: Colors.white),
             //   child: ActionSlider.dual(
             //     backgroundBorderRadius: BorderRadius.circular(10.0),
             //     foregroundBorderRadius: BorderRadius.circular(10.0),
@@ -118,11 +117,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: 55,
                   child: Center(
                       child: SizedBox(
-                        width: 24.0,
-                        height: 24.0,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2.0, color: theme.iconTheme.color),
-                      ))),
+                    width: 24.0,
+                    height: 24.0,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2.0, color: theme.iconTheme.color),
+                  ))),
               successIcon: const SizedBox(
                   width: 55, child: Center(child: Icon(Icons.check_rounded))),
               icon: const SizedBox(

@@ -151,7 +151,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                                     ),
                                     decoration: InputDecoration(
                                       labelText: 'Select Vehicle'.tr,
-                                      labelStyle: const TextStyle(
+                                      labelStyle: TextStyle(
                                         color: Colors.grey,
                                         fontFamily: FontFamily.sofiaRegular,
                                         fontSize: 16,
@@ -258,7 +258,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               ),
                               child: Text(
                                 "Vehicle image".tr,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.grey,
                                   fontFamily: FontFamily.sofiaRegular,
                                   fontSize: 16,
@@ -357,7 +357,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                               ),
                               child: Text(
                                 "Vehicle Preference".tr,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.grey,
                                   fontFamily: FontFamily.sofiaRegular,
                                   fontSize: 16,

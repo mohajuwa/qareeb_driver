@@ -16,7 +16,7 @@ import '../../controller/complete_price_controller.dart';
 import '../../controller/rate_review_controller.dart';
 import '../../utils/font_family.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:timelines/timelines.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
 import '../../widget/dark_light_mode.dart';
 
@@ -176,124 +176,124 @@ class _RideCompleteScreenState extends State<RideCompleteScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          // width: 200,
                           decoration: BoxDecoration(
                             color: notifier.containerColor,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: FixedTimeline.tileBuilder(
-                            theme: TimelineThemeData(
-                              color: appColor,
-                              indicatorTheme: IndicatorThemeData(
-                                color:
-                                    timeLine == 0 ? Colors.red : Colors.green,
-                              ),
-                              connectorTheme: ConnectorThemeData(
-                                color: greyText2,
-                              ),
-                            ),
-                            builder: TimelineTileBuilder.connected(
-                              nodePositionBuilder: (context, index) => 0.05,
-                              connectionDirection: ConnectionDirection.before,
-                              connectorBuilder: (_, index, __) {
-                                if (index == 0) {
-                                  return DashedLineConnector(color: appColor);
-                                } else {
-                                  return DashedLineConnector(color: appColor);
-                                }
-                              },
-                              indicatorBuilder: (context, index) {
-                                if (index == 0) {
-                                  return DotIndicator(color: appColor);
-                                } else if (index == 1) {
-                                  return const DotIndicator(color: Colors.red);
-                                } else {
-                                  return const DotIndicator(
-                                    color: Colors.green,
-                                  );
-                                }
-                              },
-                              indicatorPositionBuilder: (context, index) =>
-                                  0.25,
-                              itemCount: completePriceController
-                                  .completePriceModel!.addCalculate.length,
-                              contentsBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 15.0,
-                                  horizontal: 15,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: completePriceController
+                                .completePriceModel!.addCalculate.length,
+                            itemBuilder: (context, index) {
+                              return TimelineTile(
+                                alignment: TimelineAlign.manual,
+                                lineXY: 0.05,
+                                isFirst: index == 0,
+                                isLast: index ==
+                                    completePriceController.completePriceModel!
+                                            .addCalculate.length -
+                                        1,
+                                indicatorStyle: IndicatorStyle(
+                                  width: 20,
+                                  color: index == 0
+                                      ? appColor
+                                      : (index == 1
+                                          ? Colors.red
+                                          : Colors.green),
+                                  indicatorXY: 0.25,
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "${completePriceController.completePriceModel!.addCalculate[index].title} ${completePriceController.completePriceModel!.addCalculate[index].subtitle}",
-                                      style: TextStyle(
-                                        fontFamily: FontFamily.sofiaProRegular,
-                                        fontSize: 14,
-                                        color: greyText,
+                                beforeLineStyle: LineStyle(
+                                  color: appColor,
+                                  thickness: 2,
+                                ),
+                                afterLineStyle: LineStyle(
+                                  color: appColor,
+                                  thickness: 2,
+                                ),
+                                endChild: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 15.0,
+                                    horizontal: 15,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "${completePriceController.completePriceModel!.addCalculate[index].title} ${completePriceController.completePriceModel!.addCalculate[index].subtitle}",
+                                        style: TextStyle(
+                                          fontFamily:
+                                              FontFamily.sofiaProRegular,
+                                          fontSize: 14,
+                                          color: greyText,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    index ==
-                                            completePriceController
-                                                    .completePriceModel!
-                                                    .addCalculate
-                                                    .length -
-                                                1
-                                        ? const SizedBox()
-                                        : Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              const SizedBox(height: 12),
-                                              Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    CupertinoIcons
-                                                        .location_solid,
-                                                    size: 20,
-                                                    color: greyText,
-                                                  ),
-                                                  const SizedBox(width: 3),
-                                                  Text(
-                                                    "${completePriceController.completePriceModel!.addCalculate[index].totKm} km",
-                                                    style: TextStyle(
-                                                      fontFamily: FontFamily
-                                                          .sofiaProRegular,
-                                                      fontSize: 15,
-                                                      color: notifier.textColor,
+                                      index ==
+                                              completePriceController
+                                                      .completePriceModel!
+                                                      .addCalculate
+                                                      .length -
+                                                  1
+                                          ? const SizedBox()
+                                          : Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const SizedBox(height: 12),
+                                                Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      CupertinoIcons
+                                                          .location_solid,
+                                                      size: 20,
+                                                      color: greyText,
                                                     ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Icon(
-                                                    CupertinoIcons.time,
-                                                    size: 20,
-                                                    color: greyText,
-                                                  ),
-                                                  const SizedBox(width: 3),
-                                                  Text(
-                                                    "${completePriceController.completePriceModel!.addCalculate[index].totTime} min",
-                                                    style: TextStyle(
-                                                      fontFamily: FontFamily
-                                                          .sofiaProRegular,
-                                                      fontSize: 15,
-                                                      color: notifier.textColor,
+                                                    const SizedBox(width: 3),
+                                                    Text(
+                                                      "${completePriceController.completePriceModel!.addCalculate[index].totKm} km",
+                                                      style: TextStyle(
+                                                        fontFamily: FontFamily
+                                                            .sofiaProRegular,
+                                                        fontSize: 15,
+                                                        color:
+                                                            notifier.textColor,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                  ],
+                                                    const SizedBox(width: 10),
+                                                    Icon(
+                                                      CupertinoIcons.time,
+                                                      size: 20,
+                                                      color: greyText,
+                                                    ),
+                                                    const SizedBox(width: 3),
+                                                    Text(
+                                                      "${completePriceController.completePriceModel!.addCalculate[index].totTime} min",
+                                                      style: TextStyle(
+                                                        fontFamily: FontFamily
+                                                            .sofiaProRegular,
+                                                        fontSize: 15,
+                                                        color:
+                                                            notifier.textColor,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(height: 15),
@@ -351,7 +351,7 @@ class _RideCompleteScreenState extends State<RideCompleteScreen> {
                                     const SizedBox(width: 5),
                                     Text(
                                       "RIDE COMPLETED".tr,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontFamily: FontFamily.sofiaProRegular,
                                         fontSize: 12.5,
                                         fontWeight: FontWeight.w500,

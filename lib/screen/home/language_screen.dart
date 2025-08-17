@@ -21,7 +21,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
 
   final List locale = [
     {'name': 'ENGLISH', 'locale': const Locale('en', 'US')},
-    {'name': 'عربى', 'locale': const Locale('ar', 'IN')},
+    {'name': 'عربى', 'locale': const Locale('ar', 'AR')},
     {'name': 'हिंदी', 'locale': const Locale('hi', 'IN')},
     {'name': 'Gujarati', 'locale': const Locale('gu', 'GUJARATI')},
     {'name': 'Spanish', 'locale': const Locale('es', 'ES')},

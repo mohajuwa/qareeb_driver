@@ -523,7 +523,7 @@ class _CashScreenState extends State<CashScreen> {
                         dropdownColor: notifier.background,
                         hint: Text(
                           "Select Type".tr,
-                          style: const TextStyle(color: Colors.grey),
+                          style: TextStyle(color: Colors.grey),
                         ),
                         value: addCashController.selectType,
                         icon: Icon(

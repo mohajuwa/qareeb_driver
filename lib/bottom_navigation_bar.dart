@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:dash_bubble/dash_bubble.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -69,20 +69,16 @@ class _BottomBarScreenState extends State<BottomBarScreen>
     switch (state) {
       case AppLifecycleState.resumed:
         isAppClosing = false;
-        // _stopBubble();
+        _closeOverlay();
         break;
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.paused:
         isAppClosing = true;
         _updateUserStatus();
-        // _requestOverlayPermission(context);
+        _requestOverlayPermission(context);
         break;
       case AppLifecycleState.detached:
-        // if (!_isAppClosing) {
-        //   isAppClosing = false;
-        //   _updateUserStatus();
-        // }
         break;
       case AppLifecycleState.hidden:
         break;
@@ -146,17 +142,13 @@ class _BottomBarScreenState extends State<BottomBarScreen>
                   currentIndexBottom == 0
                       ? SvgPicture.asset(
                           "assets/image/request.svg",
-                          // height: 21.5,
-                          // width: 21.5,
                           color: appColor,
                         )
                       : SvgPicture.asset(
                           "assets/image/request.svg",
-                          // height: 21.5,
-                          // width: 21.5,
                           color: notifier.textColor,
                         ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 2),
                   Text(
                     "Request".tr,
                     maxLines: 2,
@@ -184,7 +176,7 @@ class _BottomBarScreenState extends State<BottomBarScreen>
                           "assets/image/earning.svg",
                           color: notifier.textColor,
                         ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 2),
                   Text(
                     "My Earning".tr,
                     maxLines: 1,
@@ -213,7 +205,7 @@ class _BottomBarScreenState extends State<BottomBarScreen>
                       "assets/image/rating.svg",
                       color: notifier.textColor,
                     ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 2),
                   Text(
                     "My Review".tr,
                     maxLines: 1,
@@ -241,7 +233,7 @@ class _BottomBarScreenState extends State<BottomBarScreen>
                           "assets/image/wallet.svg",
                           color: notifier.textColor,
                         ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 2),
                   Text(
                     "Wallet".tr,
                     maxLines: 1,
@@ -263,99 +255,61 @@ class _BottomBarScreenState extends State<BottomBarScreen>
     );
   }
 
+  // MIGRATED: flutter_overlay_window methods replace dash_bubble
   Future<void> _requestOverlayPermission(BuildContext context) async {
-    await _runMethod(context, () async {
-      final isGranted = await DashBubble.instance.requestOverlayPermission();
-
-      print("++++++++++++<><isGranted><><><><><><>><> ${isGranted}");
-      if (isGranted == true) {
-        // snackBar(context: context, text: "Background Permission Granted");
-        _startBubble(
-          context,
-          bubbleOptions: BubbleOptions(
-            // notificationIcon: 'github_bubble',
-            // bubbleIcon: 'assets/image/app_logo.svg',
-            // closeIcon: 'github_bubble',
-            startLocationX: 0,
-            startLocationY: 100,
-            bubbleSize: 60,
-            opacity: 1,
-            enableClose: true,
-            closeBehavior: CloseBehavior.following,
-            distanceToClose: 100,
-            enableAnimateToEdge: true,
-            enableBottomShadow: true,
-            keepAliveWhenAppExit: false,
-          ),
-          // notificationOptions: NotificationOptions(
-          //   id: 1,
-          //   title: 'Dash Bubble Playground',
-          //   body: 'Dash Bubble service is running',
-          //   channelId: 'dash_bubble_notification',
-          //   channelName: 'Dash Bubble Notification',
-          // ),
-          onTap: openAppOrPlayStore,
-
-          // onTapDown: (x, y) => snackBar(
-          //   context: context,
-          //   text:
-          //   'Bubble Tapped Down on: ${_getRoundedCoordinatesAsString(x, y)}',
-          // ),
-          // onTapUp: (x, y) => snackBar(
-          //   context: context,
-          //   text:
-          //   'Bubble Tapped Up on: ${_getRoundedCoordinatesAsString(x, y)}',
-          // ),
-          // onMove: (x, y) => snackBar(
-          //   context: context,
-          //   text:
-          //   'Bubble Moved to: ${_getRoundedCoordinatesAsString(x, y)}',
-          // ),
-        );
-      } else {
-        snackBar(
-          context: context,
-          text: "Background Permission is not Granted",
-        );
-      }
-    });
-  }
-
-  Future<void> _startBubble(
-    BuildContext context, {
-    BubbleOptions? bubbleOptions,
-    NotificationOptions? notificationOptions,
-    VoidCallback? onTap,
-    Function(double x, double y)? onTapDown,
-    Function(double x, double y)? onTapUp,
-    Function(double x, double y)? onMove,
-  }) async {
-    await _runMethod(context, () async {
-      final hasStarted = await DashBubble.instance.startBubble(
-        bubbleOptions: bubbleOptions,
-        notificationOptions: notificationOptions,
-        onTap: onTap,
-        onTapDown: onTapDown,
-        onTapUp: onTapUp,
-        onMove: onMove,
-      );
-    });
-  }
-
-  Future<void> _runMethod(
-    BuildContext context,
-    Future<void> Function() method,
-  ) async {
     try {
-      await method();
+      // Check if overlay permission is granted
+      final status = await FlutterOverlayWindow.isPermissionGranted();
+
+      print("++++++++++++<><isGranted><><><><><><>><> $status");
+
+      if (status) {
+        // Permission already granted, show overlay
+        await _showOverlay();
+      } else {
+        // Request overlay permission
+        final isGranted = await FlutterOverlayWindow.requestPermission();
+
+        if (isGranted == true) {
+          await _showOverlay();
+        } else {
+          snackBar(
+            context: context,
+            text: "Background Permission is not Granted",
+          );
+        }
+      }
     } catch (error) {
-      log(name: 'Dash Bubble Playground', error.toString());
+      log(name: 'Flutter Overlay Window', error.toString());
       snackBar(context: context, text: 'Error: ${error.runtimeType}');
     }
   }
 
-  String _getRoundedCoordinatesAsString(double x, double y) {
-    return '${x.toStringAsFixed(2)}, ${y.toStringAsFixed(2)}';
+  Future<void> _showOverlay() async {
+    try {
+      await FlutterOverlayWindow.showOverlay(
+        enableDrag: true,
+        overlayTitle: "Qareeb Driver",
+        overlayContent: 'Tap to return to app',
+        flag: OverlayFlag.defaultFlag,
+        visibility: NotificationVisibility.visibilityPublic,
+        positionGravity: PositionGravity.auto,
+        width: 100,
+        height: 100,
+      );
+    } catch (e) {
+      print('Error showing overlay: $e');
+    }
+  }
+
+  // Listen for overlay taps (you'll need to set this up in your main.dart)
+  void _setupOverlayListener() {
+    FlutterOverlayWindow.overlayListener.listen((data) {
+      log("Overlay tapped: $data");
+      if (data == 'overlay_tap') {
+        openAppOrPlayStore();
+      }
+    });
   }
 
   Future<void> openAppOrPlayStore() async {
@@ -374,34 +328,31 @@ class _BottomBarScreenState extends State<BottomBarScreen>
         Timer(const Duration(seconds: 2), () {
           print("22222222222222222222222222 TIMER");
           setState(() {
-            _stopBubble();
+            _closeOverlay();
           });
         });
       } else {
-        // // Redirect to the Play Store if the app is not installed
-        // await LaunchApp.openApp(
-        //   androidPackageName: 'com.android.vending',
-        //   // iosUrlScheme: 'itms-apps://itunes.apple.com/app/id123456789', // Example for iOS
-        //   iosUrlScheme: 'https://play.google.com/apps/testing/com.xcamp.organizers', // Example for iOS
-        //   appStoreLink: 'https://play.google.com/apps/testing/com.xcamp.organizers',
-        // );
+        // App not installed - you can add Play Store redirect logic here
+        print('App not installed');
       }
     } catch (e) {
       print('Error: $e');
     }
   }
 
-  Future<void> _stopBubble() async {
-    await _runMethod(context, () async {
-      final hasStopped = await DashBubble.instance.stopBubble();
+  Future<void> _closeOverlay() async {
+    try {
+      final result = await FlutterOverlayWindow.closeOverlay();
+      print('Overlay closed: $result');
+    } catch (e) {
+      print('Error closing overlay: $e');
+    }
+  }
 
-      // snackBar(context: context, text: 'ZippyGo Captain stop running in background');
-
-      // SnackBars.show(
-      //   context: context,
-      //   status: SnackBarStatus.success,
-      //   message: hasStopped ? 'Bubble Stopped' : 'Bubble has not Stopped',
-      // );
-    });
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    tabController.dispose();
+    super.dispose();
   }
 }

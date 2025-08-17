@@ -184,7 +184,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                   letterSpacing: 0.3,
                                 ),
                                 decoration: InputDecoration(
-                                  labelStyle: const TextStyle(
+                                  labelStyle: TextStyle(
                                     color: Colors.grey,
                                     fontFamily: FontFamily.sofiaRegular,
                                     fontSize: 16,
@@ -297,7 +297,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                     horizontal: 12,
                                   ),
                                   labelText: "Enter Password".tr,
-                                  labelStyle: const TextStyle(
+                                  labelStyle: TextStyle(
                                     color: Colors.grey,
                                     fontFamily: FontFamily.sofiaRegular,
                                     fontSize: 16,
@@ -351,7 +351,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                               ),
                               child: Text(
                                 "Vehicle Preference".tr,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.grey,
                                   fontFamily: FontFamily.sofiaRegular,
                                   fontSize: 16,
@@ -459,7 +459,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                               ),
                               child: Text(
                                 "Profile Picture".tr,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.grey,
                                   fontFamily: FontFamily.sofiaRegular,
                                   fontSize: 16,
@@ -658,7 +658,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
             children: [
               Text(
                 "Add Language".tr,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.grey,
                   fontFamily: FontFamily.sofiaRegular,
                   fontSize: 16,
@@ -735,13 +735,13 @@ class _PersonalInfoState extends State<PersonalInfo> {
                     borderSide: BorderSide(color: Colors.grey.shade200),
                     borderRadius: BorderRadius.circular(13),
                   ),
-                  hintStyle: const TextStyle(
+                  hintStyle: TextStyle(
                     color: Colors.grey,
                     fontFamily: FontFamily.sofiaRegular,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     color: Colors.grey,
                     fontFamily: FontFamily.sofiaRegular,
                     fontSize: 16,
@@ -785,7 +785,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                       InkWell(
                                         child: Text(
                                           tag,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             color: Colors.white,
                                           ),
                                         ),
@@ -853,7 +853,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
             children: [
               Text(
                 "Select Zone".tr,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.grey,
                   fontFamily: FontFamily.sofiaRegular,
                   fontSize: 16,
@@ -922,7 +922,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                     ),
                     decoration: InputDecoration(
                       hintText: ''.tr,
-                      labelStyle: const TextStyle(
+                      labelStyle: TextStyle(
                         color: Colors.grey,
                         fontFamily: FontFamily.sofiaRegular,
                         fontSize: 16,
@@ -964,7 +964,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                           InkWell(
                                             child: Text(
                                               tag,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 color: Colors.white,
                                               ),
                                             ),

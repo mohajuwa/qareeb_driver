@@ -762,7 +762,7 @@ class _WalletScreenState extends State<WalletScreen> {
                         dropdownColor: notifier.background,
                         hint: Text(
                           "Select Type".tr,
-                          style: const TextStyle(color: Colors.grey),
+                          style: TextStyle(color: Colors.grey),
                         ),
                         value: payoutWalletController.selectType,
                         icon: Icon(
@@ -913,8 +913,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                       dropdownColor: notifier.background,
                                       hint: Text(
                                         "Bank Type".tr,
-                                        style:
-                                            const TextStyle(color: Colors.grey),
+                                        style: TextStyle(color: Colors.grey),
                                       ),
                                       value: payoutWalletController.bankType,
                                       icon: Icon(

@@ -119,7 +119,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar({
     SnackBar(
       content: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: FontFamily.sofiaProBold,
           fontSize: 14,
         ),
@@ -202,21 +202,21 @@ textfield({
           decoration: InputDecoration(
             suffixIcon: suffix,
             labelText: label,
-            labelStyle: const TextStyle(
+            labelStyle: TextStyle(
               color: Colors.grey,
               fontFamily: FontFamily.sofiaRegular,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
             hintText: labelText,
-            helperStyle: const TextStyle(
+            helperStyle: TextStyle(
               color: Colors.grey,
               fontFamily: FontFamily.sofiaRegular,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
             helperText: helperText,
-            hintStyle: const TextStyle(
+            hintStyle: TextStyle(
               color: Colors.grey,
               fontFamily: FontFamily.sofiaRegular,
               fontSize: 16,
@@ -304,21 +304,21 @@ textfield2({
           decoration: InputDecoration(
             suffixIcon: suffix,
             labelText: label,
-            labelStyle: const TextStyle(
+            labelStyle: TextStyle(
               color: Colors.grey,
               fontFamily: FontFamily.sofiaRegular,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
             hintText: labelText,
-            helperStyle: const TextStyle(
+            helperStyle: TextStyle(
               color: Colors.grey,
               fontFamily: FontFamily.sofiaRegular,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
             helperText: helperText,
-            hintStyle: const TextStyle(
+            hintStyle: TextStyle(
               color: Colors.grey,
               fontFamily: FontFamily.sofiaRegular,
               fontSize: 16,

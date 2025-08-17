@@ -105,7 +105,7 @@ class _FinalVerificationScreenState extends State<FinalVerificationScreen> {
               Text(
                 "Once all your details—mobile number, personal info, vehicle, and bank information—are submitted correctly, we’ll review them and get your account activated in no time!"
                     .tr,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.grey,
                   fontSize: 16,
                   fontFamily: FontFamily.sofiaProRegular,
@@ -141,7 +141,7 @@ class _FinalVerificationScreenState extends State<FinalVerificationScreen> {
               Text(
                 "Once all information is correctly submitted, we’ll review it and activate your account quickly!"
                     .tr,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.grey,
                   fontSize: 16,
                   fontFamily: FontFamily.sofiaProRegular,
@@ -183,7 +183,7 @@ class _FinalVerificationScreenState extends State<FinalVerificationScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 6),
           child: Text(
             subtitle,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.grey,
               fontSize: 15,
               fontFamily: FontFamily.sofiaProRegular,

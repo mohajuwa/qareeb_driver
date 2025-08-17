@@ -89,32 +89,40 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // --- LAYOUT CORRECTION ---
     return Scaffold(
       backgroundColor: whiteColor,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(child: SvgPicture.asset("assets/image/app_logo.svg")),
-          const SizedBox(height: 20),
-          Text(
-            "ZippyGO",
-            style: TextStyle(
-              color: appColor,
-              fontSize: 24,
-              fontFamily: FontFamily.sofiaProBold,
+      // 1. Use Center to perfectly center the content on the screen.
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // 2. Give the SVG a specific height to prevent it from expanding infinitely.
+            SvgPicture.asset(
+              "assets/image/app_logo.svg",
+              height: 150, // TODO: Adjust this value to your liking
             ),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            "Be the Captain of Every Journey",
-            style: TextStyle(
-              color: appColor,
-              fontSize: 13.5,
-              fontFamily: FontFamily.sofiaProBold,
+            const SizedBox(height: 10),
+            Text(
+              "QareebGo",
+              style: TextStyle(
+                color: appColor,
+                fontSize: 24,
+                fontFamily: FontFamily.sofiaProBold,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 5),
+            Text(
+              "Be the Captain of Every Journey",
+              style: TextStyle(
+                color: appColor,
+                fontSize: 13.5,
+                fontFamily: FontFamily.sofiaProBold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

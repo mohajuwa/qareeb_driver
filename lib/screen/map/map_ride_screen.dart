@@ -1545,12 +1545,8 @@ class _MapRideScreenState extends State<MapRideScreen> {
 
                                                                             mapLocationUpdateController.getDirections11(
                                                                               lat1: PointLatLng(
-                                                                                double.parse(
-                                                                                  mapData["request_data"]["drop_latlon"]["latitude"].toString(),
-                                                                                ),
-                                                                                double.parse(
-                                                                                  mapData["request_data"]["drop_latlon"]["longitude"].toString(),
-                                                                                ),
+                                                                                double.tryParse(mapData["request_data"]["drop_latlon"]["latitude"]?.toString() ?? '') ?? 0.0,
+                                                                                double.tryParse(mapData["request_data"]["drop_latlon"]["longitude"]?.toString() ?? '') ?? 0.0,
                                                                               ),
                                                                               dropOffPoints: mapLocationUpdateController.dropOffPoints,
                                                                             );

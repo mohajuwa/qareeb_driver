@@ -2074,10 +2074,12 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       PointLatLng point2 = allPoints[i + 1];
 
       PolylineResult result = await polylinePoints11.getRouteBetweenCoordinates(
-        Config.mapKey,
-        point1,
-        point2,
-        travelMode: TravelMode.driving,
+        request: PolylineRequest(
+          origin: point1,
+          destination: point2,
+          mode: TravelMode.driving,
+        ),
+        googleApiKey: Config.mapKey, // Move API key to the named parameter
       );
 
       if (result.points.isNotEmpty) {
@@ -2086,6 +2088,8 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
         }
       } else {
         // Handle the case where no route is found
+        print(
+            'No route found between ${point1.latitude},${point1.longitude} and ${point2.latitude},${point2.longitude}');
       }
     }
 
@@ -2417,7 +2421,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     children: [
                       Text(
                         "Offering your fare ${getData.read("Currency")}$price",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w500,
                           color: Colors.white,
@@ -2637,7 +2641,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           print("-+-+++-++**//7856514566566 SuccessFully");
                           scaffoldMessengerKey.currentState?.showSnackBar(
                             SnackBar(
-                              content: const Text(
+                              content: Text(
                                 "Offer Send Successfully",
                                 style: TextStyle(
                                   fontFamily: FontFamily.sofiaProBold,
@@ -2714,7 +2718,7 @@ class _OfferingState extends State<Offering> with TickerProviderStateMixin {
         content: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Your offer expired",
               style: TextStyle(
                 fontFamily: FontFamily.sofiaProBold,
@@ -2727,7 +2731,7 @@ class _OfferingState extends State<Offering> with TickerProviderStateMixin {
                 onTap();
                 scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
               },
-              child: const Text(
+              child: Text(
                 "SEND AGAIN",
                 style: TextStyle(
                   fontFamily: FontFamily.sofiaProBold,
