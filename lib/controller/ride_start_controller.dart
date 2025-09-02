@@ -9,20 +9,20 @@ import '../config/config.dart';
 import '../config/data_store.dart';
 import '../model/ride_start_model.dart';
 import '../widget/common.dart';
+// In RideStartController.dart
 
 class RideStartController extends GetxController implements GetxService {
   RideStartModel? rideStartModel;
   bool isLoading = false;
-
   bool isLoad = false;
   bool isCircle = false;
 
   Future rideStartApi({required context, required String requestId}) async {
     if (isLoad) {
       return;
-    } else {
-      isLoad = true;
     }
+    isLoad = true;
+    update();
 
     Map body = {
       "uid": getData.read("UserLogin")['id'],
@@ -31,42 +31,57 @@ class RideStartController extends GetxController implements GetxService {
       "lon": movingLong.toString(),
     };
 
-    Map<String, String> userHeader = {
-      "Content-type": "application/json",
-      "Accept": "application/json",
-    };
+    try {
+      var response = await http.post(
+        Uri.parse(Config.baseUrl + Config.rideStart),
+        body: jsonEncode(body),
+        headers: {
+          "Content-type": "application/json",
+          "Accept": "application/json",
+        },
+      );
 
-    var response = await http.post(
-      Uri.parse(Config.baseUrl + Config.rideStart),
-      body: jsonEncode(body),
-      headers: userHeader,
-    );
-
-    print("+++++++++++++++++ ${body}");
-    print("+++++++++++++++++ ${response.body}");
-
-    var data = jsonDecode(response.body);
-    if (response.statusCode == 200) {
-      if (data["Result"] == true) {
-        rideStartModel = rideStartModelFromJson(response.body);
-        if (rideStartModel!.result == true) {
+      // ✅ This logic now prints ANY non-200 response directly to your console.
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data["Result"] == true) {
+          // Success case
+          rideStartModel = rideStartModelFromJson(response.body);
           isLoading = true;
           isLoad = false;
-          // isCircle = false;
           update();
-          return response.body;
+          return response.body; // Return successful data
         } else {
-          snackBar(context: context, text: rideStartModel!.message.toString());
+          // Business logic error (e.g., Result: false)
+          print("--- BACKEND LOGIC ERROR ---");
+          print("Status Code: ${response.statusCode}");
+          print("Response Body: ${response.body}");
+          print("---------------------------");
+          snackBar(
+              context: context,
+              text: data["message"] ?? "An unknown error occurred.");
         }
       } else {
-        snackBar(context: context, text: "${data["message"]}");
+        // Handles other errors like 404, 500, etc.
+        print("--- HTTP ERROR ---");
+        print("Status Code: ${response.statusCode}");
+        print(
+            "Response Body: ${response.body}"); // See exactly what the server sent
+        print("------------------");
+        snackBar(
+            context: context, text: "Server error: ${response.statusCode}");
       }
-    } else {
-      snackBar(
-        context: context,
-        text:
-            "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added.",
-      );
+    } catch (e) {
+      // Handles network failures (no internet, server down)
+      print("--- NETWORK/CLIENT ERROR ---");
+      print(e.toString());
+      print("----------------------------");
+      snackBar(context: context, text: "Failed to connect to the server.");
     }
+
+    // If we reach here, it means an error occurred.
+    isLoad = false;
+    update();
+    return null; // Explicitly return null on failure
   }
 }

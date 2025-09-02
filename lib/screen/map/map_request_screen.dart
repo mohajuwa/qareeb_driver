@@ -5,6 +5,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'package:action_slider/action_slider.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_svg/svg.dart';
@@ -94,61 +95,10 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     getDarkMode();
     mapThemeStyle();
     notificationSoundPlayer.stopNotificationSound();
-    // Timer(const Duration(seconds: 2), () {
-
-    // });
 
     socketConnect();
     print("//////requestID///////////////// ${widget.requestID}");
-    // requestDetailController.requestDetailApi(requestId: widget.requestID).then((value) {
-    //   Map<String, dynamic> mapData = json.decode(value);
-    //   print("++++++++++++++++ ${mapData}");
-    //
-    //   // mapData["request_data"]["status"] == "1" ? bottomSheet(requestID: widget.requestID.toString()) : const SizedBox();
-    //
-    //   List<dynamic> dropOffPointsDynamic = mapData["request_data"]["drop_latlon"];
-    //   // List<Map<String, String>> nameLocation = mapData["request_data"]["drop_latlon"];
-    //   print("------List------------- $dropOffPointsDynamic");
-    //
-    //   dropOffPoints = dropOffPointsDynamic.map((item) {
-    //     return PointLatLng(
-    //       double.parse(item["latitude"].toString()),
-    //       double.parse(item["longitude"].toString()),
-    //     );
-    //   }).toList();
-    //
-    //   print(
-    //       "++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}");
-    //   print(
-    //       "++++++++++++++longitude+++++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}");
-    //   _addMarker11(
-    //     LatLng(
-    //       double.parse(
-    //           mapData["request_data"]["pick_latlon"]["latitude"].toString()),
-    //       double.parse(
-    //           mapData["request_data"]["pick_latlon"]["longitude"].toString()),
-    //     ),
-    //     "origin",
-    //     BitmapDescriptor.defaultMarker,
-    //     "${requestDetailController.requestDetailModel!.requestData.pickAdd.title} ${requestDetailController.requestDetailModel!.requestData.pickAdd.subtitle}"
-    //
-    //   );
-    //
-    //   for (int a = 0; a < dropOffPoints.length; a++) {
-    //     _addMarker3("destination",);
-    //   }
-    //
-    //   getDirections11(
-    //     lat1: PointLatLng(
-    //         double.parse(
-    //             mapData["request_data"]["pick_latlon"]["latitude"].toString()),
-    //         double.parse(mapData["request_data"]["pick_latlon"]["longitude"]
-    //             .toString())),
-    //     dropOffPoints: dropOffPoints,
-    //   );
-    //
-    //   setState(() {});
-    // });
+
     requestDetailController.requestDetailApi(requestId: widget.requestID).then((
       value,
     ) {
@@ -160,9 +110,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           uid: getData.read("UserLogin")["id"].toString(),
         );
         currentIndexBottom = 0;
-        // setState(() {
-        //
-        // });
+
         Get.offAll(const BottomBarScreen());
         return;
       }
@@ -283,10 +231,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     socket.off('AcceRemoveOther');
     socket.off('RequestTimeOut');
     socket.off('removeotherdata${getData.read("UserLogin")["id"].toString()}');
-    // socket.close();
-    // socket.off('Vehicle_Ride_Cancel');
-    // socket.off('AcceRemoveOther');
-    // socket.off('TimeOut_Driver_VBidding');
 
     socket.onConnect((data) => print('Connection established request'));
     socket.onConnectError((data) => print('Connect Error: $data'));
@@ -304,11 +248,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           )) {
         notificationSoundPlayer.stopNotificationSound();
         currentIndexBottom = 0;
-        // setState(() {
-        //
-        // });
+
         Get.offAll(const BottomBarScreen());
-        // Get.back();
+
         Timer(const Duration(seconds: 2), () {
           print("22222222222222222222222222 TIMER");
           Get.to(MapScreen(requestID: request["requestid"].toString()));
@@ -376,63 +318,25 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       }
     });
 
-    socket.on("Accept_Bidding${getData.read("UserLogin")["id"].toString()}",
-        (request) {
-      print("🚗 DRIVER: Accept_Bidding received!");
-      print("🚗 DRIVER: My driver ID: ${getData.read("UserLogin")["id"]}");
-      print("🚗 DRIVER: Raw data: $request");
-      print("🚗 DRIVER: Data type: ${request.runtimeType}");
-
-      if (request is Map) {
-        print("🚗 DRIVER: Keys available: ${request.keys}");
-        print("🚗 DRIVER: requestid: ${request["requestid"]}");
-        print("🚗 DRIVER: uid: ${request["uid"]}");
-        print("🚗 DRIVER: c_id: ${request["c_id"]}");
-      }
-
-      print("🚗 DRIVER: Setting homeStatus = 0");
+    socket.on("Accept_Bidding${getData.read("UserLogin")["id"].toString()}", (
+      request,
+    ) {
+      print("+++<><><>+++request123456789<><><><><><<>${request}");
       homeStatus = 0;
-
-      print(
-          "🚗 DRIVER: About to call requestDetailApi with: ${request["requestid"].toString()}");
-
       requestDetailController
           .requestDetailApi(requestId: request["requestid"].toString())
           .then((value) {
-        print("🚗 DRIVER: API call completed");
-        print("🚗 DRIVER: Response value: $value");
-        print("🚗 DRIVER: Response is null: ${value == null}");
-
-        if (value != null) {
-          print("🚗 DRIVER: Stopping notification sound");
-          notificationSoundPlayer.stopNotificationSound();
-
-          print("🚗 DRIVER: About to navigate to MapRideScreen");
-          print(
-              "🚗 DRIVER: Time: ${requestDetailController.requestDetailModel?.requestData.totMinute}");
-          print("🚗 DRIVER: Request ID: ${request["requestid"].toString()}");
-
-          Get.to(
-            MapRideScreen(
-              time: requestDetailController
-                  .requestDetailModel!.requestData.totMinute
-                  .toString(),
-              requestId: request["requestid"].toString(),
-            ),
-          );
-
-          print("🚗 DRIVER: Navigation command executed");
-        } else {
-          print("🚗 DRIVER: ❌ API response was null - cannot navigate");
-        }
-      }).catchError((error) {
-        print("🚗 DRIVER: ❌ API call failed with error: $error");
-        print("🚗 DRIVER: ❌ Error type: ${error.runtimeType}");
+        notificationSoundPlayer.stopNotificationSound();
+        Get.to(
+          MapRideScreen(
+            time: requestDetailController
+                .requestDetailModel!.requestData.totMinute
+                .toString(),
+            requestId: request["requestid"].toString(),
+          ),
+        );
       });
-
-      print("🚗 DRIVER: Accept_Bidding handler completed");
     });
-
     socket.on("Bidding_decline${getData.read("UserLogin")["id"].toString()}", (
       request,
     ) {
@@ -463,12 +367,12 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    controller.dispose();
+    controller
+        .dispose(); // This should now work since controller is always initialized
     socket.off('vehiclerequest');
     socket.off('AcceRemoveOther');
     socket.off('RequestTimeOut');
     socket.off('removeotherdata${getData.read("UserLogin")["id"].toString()}');
-    // socket.close();
     notificationSoundPlayer.stopNotificationSound();
     super.dispose();
   }
@@ -531,14 +435,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   TextEditingController bidController = TextEditingController();
 
   cancelSocket({required String requestID, required String cId}) {
-    // socket.emit('Vehicle_Bidding', {
-    //   'uid': getData.read("UserLogin")["id"].toString(),
-    //   'request_id': requestID,
-    //   'c_id': cId,
-    //   'price': "",
-    //   'status': "2",
-    // });
-    // cancelRequestController.cancelRequestApi(context: context, requestId: cId, cID: cId);
     setState(() {
       checkVehicleRequestController.checkVehicleApi(
         uid: getData.read("UserLogin")["id"].toString(),
@@ -694,7 +590,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                       ),
                                     ),
                                     child: Stack(
-                                      // alignment: Alignment.center,
                                       children: [
                                         SingleChildScrollView(
                                           controller: scrollController,
@@ -713,7 +608,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Column(
-                                                    // crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       Container(
                                                         alignment:
@@ -959,22 +853,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                                             ),
                                                           ],
                                                         ),
-                                                        // const SizedBox(height: 8),
-                                                        // Row(
-                                                        //   children: [
-                                                        //     const SizedBox(
-                                                        //         width: 25),
-                                                        //     Text(
-                                                        //       "Payment by card",
-                                                        //       style: TextStyle(
-                                                        //         color: greyText,
-                                                        //         fontSize: 14,
-                                                        //         fontFamily: FontFamily
-                                                        //             .sofiaProRegular,
-                                                        //       ),
-                                                        //     ),
-                                                        //   ],
-                                                        // ),
                                                       ],
                                                     ),
                                                   ),
@@ -1149,27 +1027,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                                               ),
                                                             ),
                                                           )
-                                                        // button(text: "Accept For ${double.parse(requestDetailController.requestDetailModel!.requestData.price.toString())}${getData.read("Currency")}", color: Colors.green,
-                                                        //   onPress: (){
-                                                        //     setState(() {
-                                                        //       isLoadingAccepted = true;
-                                                        //     });
-                                                        //     socket.emit('Vehicle_Bidding', {
-                                                        //       'uid': getData.read("UserLogin")["id"].toString(),
-                                                        //       'request_id': requestDetailController.requestDetailModel!.requestData.id.toString(),
-                                                        //       'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
-                                                        //       'price': "${double.parse(requestDetailController.requestDetailModel!.requestData.price.toString())}",
-                                                        //       "status": "1",
-                                                        //     });
-                                                        //     bidWaitingBottom(price: "${double.parse(requestDetailController.requestDetailModel!.requestData.price.toString())}");
-                                                        //     acceptRequestController.acceptRequest(accepted: true); // Mark the request as accepted
-                                                        //     controller.stop(); // Stop the animation controller
-                                                        //     controller.reset();
-                                                        //     isLoadingAccepted =
-                                                        //     false;
-                                                        //     setState(() {});
-                                                        //   }
-                                                        // )
                                                         : Center(
                                                             child: ActionSlider
                                                                 .standard(
@@ -1344,35 +1201,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                                               ),
                                                             ),
                                                           );
-                                                    // button(text: "Accept For ${double.parse(requestDetailController.requestDetailModel!.requestData.price.toString())}${getData.read("Currency")}",
-                                                    //   color: Colors.green,
-                                                    //   onPress: () {
-                                                    //     setState(() {
-                                                    //       isLoadingAccepted = true;
-                                                    //     });
-                                                    //     print(
-                                                    //         "*****requestID******* ${widget.requestID}");
-                                                    //     acceptRequestController.acceptRequestApi(context: context, requestId: widget.requestID).then((value) {
-                                                    //       Map<String, dynamic>decodedValue = json.decode(value);
-                                                    //       if (decodedValue["Result"] == true) {
-                                                    //         print("-----requestIDSocket/////////////////////-------- ${decodedValue["requestid"].toString()}");
-                                                    //         socket.emit('acceptvehrequest', {
-                                                    //               'uid': getData.read("UserLogin")["id"].toString(),
-                                                    //               'request_id': decodedValue["requestid"].toString(),
-                                                    //               'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),}
-                                                    //         );
-                                                    //         notificationSoundPlayer.stopNotificationSound();
-                                                    //         bottomSheet(requestID: decodedValue["requestid"].toString());
-                                                    //         acceptRequestController.acceptRequest(accepted: true);
-                                                    //         controller.stop();
-                                                    //         controller.reset();
-                                                    //         isLoadingAccepted = false;
-                                                    //         setState(() {});
-                                                    //       }
-                                                    //     });
-                                                    //   },
-                                                    // )
-                                                    // ;
                                                   },
                                                 ),
                                               ),
@@ -1440,10 +1268,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                                                       () {
                                                                     if (!acceptRequestController
                                                                         .isRequestAccepted) {
-                                                                      // requestDetailController.requestDetailModel!.requestData.biddingStatus == "1"
-                                                                      // ? cancelSocket(requestID: requestDetailController.requestDetailModel!.requestData.id.toString(), cId: requestDetailController.requestDetailModel!.requestData.cId.toString())
-                                                                      // : cancelRequestController.cancelRequestApi(context: context, requestId: requestDetailController.requestDetailModel!.requestData.id.toString(), cID: requestDetailController.requestDetailModel!.requestData.cId.toString());
-                                                                      // // : rejectBack();
                                                                       requestDetailController.requestDetailModel!.requestData.biddingStatus == "1" &&
                                                                               requestDetailController.requestDetailModel!.requestData.biddAutoStatus ==
                                                                                   "0"
@@ -1830,7 +1654,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: bidController,
-                    // obscureText: loginController.obscureText,
                     onChanged: (value) {
                       setState(() {
                         bidController.text = value;
@@ -2025,7 +1848,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       final Uint8List markIcon = await getImages11("assets/image/drop.png", 80);
       MarkerId markerId = MarkerId(id[a]);
 
-      // Assuming _dropOffPoints[a] is of type PointLatLng, convert it to LatLng
       LatLng position = LatLng(
         dropOffPoints[a].latitude,
         dropOffPoints[a].longitude,
@@ -2091,7 +1913,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     Polyline polyline = Polyline(
       polylineId: id,
       color: appColor,
-      // points: [...polylineCoordinates,..._dropOffPoints],
       points: polylineCoordinates,
       width: 4,
     );
@@ -2124,7 +1945,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
           polylineCoordinates.add(LatLng(point.latitude, point.longitude));
         }
       } else {
-        // Handle the case where no route is found
         print(
             'No route found between ${point1.latitude},${point1.longitude} and ${point2.latitude},${point2.longitude}');
       }
@@ -2153,7 +1973,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   "1"
               ? await Get.offAll(const BottomBarScreen())
               : true;
-          // return true;
         },
         child: StatefulBuilder(
           builder: (context, setState) {
@@ -2183,7 +2002,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Column(
-                              // crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
                                   alignment: Alignment.center,
@@ -2346,9 +2164,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                 print(
                                   "+++++++++++++++++++++++ ${timeData[index]}",
                                 );
-                                // timeController.timeApi(context: context, requestId: requestID, cId: requestDetailController.requestDetailModel!.requestData.cId.toString(), time: timeData[index].toString(),).then((value) {
-                                //   Map<String, dynamic> decodedValue = json.decode(value);
-                                // if(decodedValue["Result"] == true){
+
                                 socket.emit('Vehicle_Time_update', {
                                   'uid': getData
                                       .read("UserLogin")["id"]
@@ -2374,12 +2190,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                                   setState(() {});
                                 });
                                 print('ELELELELELELELELE:__${isLoading}');
-
-                                //   }else{
-                                //     snackBar(context: context, text: "Something went Wrong");
-                                //   // }?
-                                //   // },
-                                //   );
                               },
                             );
                           },
@@ -2438,8 +2248,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
     notificationSoundPlayer.stopNotificationSound();
     return Get.bottomSheet(
       isScrollControlled: true,
-      // enableDrag: false,
-      // isDismissible: false,
       StatefulBuilder(
         builder: (context, setState) {
           return Stack(
@@ -2504,7 +2312,6 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Column(
-                              // crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
                                   alignment: Alignment.center,
@@ -2763,7 +2570,6 @@ class _OfferingState extends State<Offering> with TickerProviderStateMixin {
               ),
             ),
             GestureDetector(
-              // onTap: onTap,
               onTap: () {
                 onTap();
                 scaffoldMessengerKey.currentState?.hideCurrentSnackBar();

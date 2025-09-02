@@ -1481,160 +1481,105 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                     ),
                                                                     action:
                                                                         (controller) async {
+                                                                      // 🔄 Set initial loading state
                                                                       controller
                                                                           .loading();
-                                                                      mapLocationUpdateController
-                                                                          .dropOffPoints = [];
-                                                                      mapLocationUpdateController
-                                                                          .markers11 = {};
-                                                                      rideStartController
-                                                                          .rideStartApi(
-                                                                        context:
-                                                                            context,
-                                                                        requestId: widget
-                                                                            .requestId
-                                                                            .toString(),
-                                                                      )
-                                                                          .then(
-                                                                              (
-                                                                        value,
-                                                                      ) {
+                                                                      setState(
+                                                                          () {
+                                                                        rideStartController.isCircle =
+                                                                            true;
+                                                                      });
+
+                                                                      try {
+                                                                        // Call the API and wait for the response
+                                                                        var value =
+                                                                            await rideStartController.rideStartApi(
+                                                                          context:
+                                                                              context,
+                                                                          requestId: widget
+                                                                              .requestId
+                                                                              .toString(),
+                                                                        );
+
+                                                                        // ✅ SAFETY CHECK #1: Handle null response from a failed API call
+                                                                        if (value ==
+                                                                            null) {
+                                                                          print(
+                                                                              "API call failed and returned null. Action aborted.");
+                                                                          // The snackbar is already shown in the controller, so we just exit the try block.
+                                                                          // The 'finally' block below will handle resetting the UI.
+                                                                          return;
+                                                                        }
+
+                                                                        // Decode the JSON response
                                                                         Map<String,
                                                                                 dynamic>
                                                                             decodedValue =
-                                                                            json.decode(
-                                                                          value,
-                                                                        );
+                                                                            json.decode(value);
+
+                                                                        // ✅ SAFETY CHECK #2: Handle the business logic success/failure
                                                                         if (decodedValue["Result"] ==
                                                                             true) {
+                                                                          // 🚀 SUCCESS LOGIC: The ride has started
+                                                                          print(
+                                                                              "Ride started successfully. Emitting socket event.");
                                                                           socket
                                                                               .emit(
                                                                             'Vehicle_Ride_Start_End',
                                                                             {
-                                                                              'uid': getData
-                                                                                  .read(
-                                                                                    "UserLogin",
-                                                                                  )["id"]
-                                                                                  .toString(),
+                                                                              'uid': getData.read("UserLogin")["id"].toString(),
                                                                               'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
                                                                               'request_id': widget.requestId.toString(),
                                                                             },
                                                                           );
+
+                                                                          // Update local state and timers
                                                                           remainingTime =
                                                                               0;
                                                                           timer
                                                                               ?.cancel();
                                                                           startTimerAdd();
-                                                                          // requestDetailController.requestDetailApi(context: context, requestId: widget.requestId.toString());
-                                                                          setState(
-                                                                            () {},
-                                                                          );
-                                                                          requestDetailController
-                                                                              .requestDetailApi(
-                                                                            requestId:
-                                                                                widget.requestId,
-                                                                          )
-                                                                              .then((
-                                                                            value,
-                                                                          ) async {
-                                                                            Map<String, dynamic>
-                                                                                mapData =
-                                                                                json.decode(
-                                                                              value,
-                                                                            );
-                                                                            print(
-                                                                              "++++++++++++++++ ${mapData}",
-                                                                            );
-                                                                            // await mapLocationUpdateController.removeMarker('origin');
 
-                                                                            List<dynamic>
-                                                                                dropOffPointsDynamic =
-                                                                                mapData["request_data"]["drop_latlon"];
-                                                                            print(
-                                                                              "------List------------- $dropOffPointsDynamic",
-                                                                            );
-
-                                                                            mapLocationUpdateController.dropOffPoints =
-                                                                                dropOffPointsDynamic.map(
-                                                                              (
-                                                                                item,
-                                                                              ) {
-                                                                                return PointLatLng(
-                                                                                  double.parse(
-                                                                                    item["latitude"].toString(),
-                                                                                  ),
-                                                                                  double.parse(
-                                                                                    item["longitude"].toString(),
-                                                                                  ),
-                                                                                );
-                                                                              },
-                                                                            ).toList();
-
-                                                                            print(
-                                                                              "++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}",
-                                                                            );
-                                                                            print(
-                                                                              "++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}",
-                                                                            );
-                                                                            mapLocationUpdateController.startLiveTracking();
-                                                                            // mapLocationUpdateController.addMarkercurrent(LatLng(double.parse(mapData["request_data"]["pick_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["pick_latlon"]["longitude"].toString()),),"origin",BitmapDescriptor.defaultMarker);
-
-                                                                            for (int a = 0;
-                                                                                a < mapLocationUpdateController.dropOffPoints.length;
-                                                                                a++) {
-                                                                              mapLocationUpdateController.addMarker3(
-                                                                                "destination",
-                                                                              );
-                                                                            }
-
-                                                                            // mapLocationUpdateController.addMarker2(LatLng(double.parse(pickLatLon["latitude"].toString()), double.parse(pickLatLon["longitude"].toString()),), 'destination');
-
-                                                                            mapLocationUpdateController.getDirections11(
-                                                                              lat1: PointLatLng(
-                                                                                double.tryParse(mapData["request_data"]["drop_latlon"]["latitude"]?.toString() ?? '') ?? 0.0,
-                                                                                double.tryParse(mapData["request_data"]["drop_latlon"]["longitude"]?.toString() ?? '') ?? 0.0,
-                                                                              ),
-                                                                              dropOffPoints: mapLocationUpdateController.dropOffPoints,
-                                                                            );
-
-                                                                            setState(
-                                                                              () {
-                                                                                rideStartController.isCircle = false;
-                                                                              },
-                                                                            );
-                                                                          });
+                                                                          // Refresh the ride details from the server
+                                                                          requestDetailController.requestDetailApi(
+                                                                              requestId: widget.requestId);
                                                                         } else {
-                                                                          snackBar(
+                                                                          // 🛑 The API worked, but the server responded with an error (e.g., "Result": false).
+                                                                          // The snackbar for this case is already handled inside your rideStartController.
+                                                                          print(
+                                                                              "API call successful, but operation failed on the server.");
+                                                                        }
+                                                                      } catch (e) {
+                                                                        // 🛑 CATCH ALL ERRORS: Catches network failures, JSON parsing errors, etc.
+                                                                        print(
+                                                                            "An unexpected error occurred in the swipe action: $e");
+                                                                        snackBar(
                                                                             context:
                                                                                 context,
                                                                             text:
-                                                                                "Something Went Wrong",
-                                                                          );
-                                                                          setState(
-                                                                              () {
-                                                                            rideStartController.isCircle =
-                                                                                false;
-                                                                          });
-                                                                        }
-                                                                      });
-                                                                      await Future
-                                                                          .delayed(
-                                                                        const Duration(
-                                                                          seconds:
-                                                                              3,
-                                                                        ),
-                                                                      );
-                                                                      controller
-                                                                          .success();
-                                                                      await Future
-                                                                          .delayed(
-                                                                        const Duration(
-                                                                          seconds:
-                                                                              1,
-                                                                        ),
-                                                                      );
-                                                                      controller
-                                                                          .reset();
+                                                                                "An unexpected error occurred. Please try again.");
+                                                                      } finally {
+                                                                        // 🔄 ALWAYS RUNS: This guarantees the UI is reset, preventing a stuck button.
+                                                                        print(
+                                                                            "Resetting swipe button state.");
+                                                                        setState(
+                                                                            () {
+                                                                          rideStartController.isCircle =
+                                                                              false;
+                                                                        });
+
+                                                                        // Animate the button back to its initial state
+                                                                        await Future.delayed(const Duration(
+                                                                            seconds:
+                                                                                1));
+                                                                        controller
+                                                                            .success();
+                                                                        await Future.delayed(const Duration(
+                                                                            seconds:
+                                                                                1));
+                                                                        controller
+                                                                            .reset();
+                                                                      }
                                                                     },
                                                                     child: Text(
                                                                       'Swipe To Start Ride',

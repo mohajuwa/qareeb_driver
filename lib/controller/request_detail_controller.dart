@@ -11,11 +11,11 @@ import '../screen/home/sound_player.dart';
 import '../widget/common.dart';
 
 class RequestDetailController extends GetxController implements GetxService {
-  final NotificationSoundPlayer notificationSoundPlayer = NotificationSoundPlayer();
+  final NotificationSoundPlayer notificationSoundPlayer =
+      NotificationSoundPlayer();
 
   RequestDetailModel? requestDetailModel;
   bool isLoading = false;
-
 
   // Future requestDetailApi({required String requestId}) async{
   //   notificationSoundPlayer.stopNotificationSound();
@@ -52,15 +52,17 @@ class RequestDetailController extends GetxController implements GetxService {
   //
   // }
 
-  Future requestDetailApi({required String requestId}) async {
+  Future<dynamic> requestDetailApi({required String requestId}) async {
     notificationSoundPlayer.stopNotificationSound();
 
-    Map body = {
+    Map<String, dynamic> body = {
+      // Changed to Map<String, dynamic>
       "uid": getData.read("UserLogin")['id'],
       "request_id": requestId
     };
 
     Map<String, String> userHeader = {
+      // Changed to Map<String, String>
       "Content-type": "application/json",
       "Accept": "application/json"
     };
@@ -78,29 +80,34 @@ class RequestDetailController extends GetxController implements GetxService {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 
-        if (data is Map<String, dynamic> && data["Result"] == true) {
+        if (data is Map && data["Result"] == true) {
           try {
             requestDetailModel = requestDetailModelFromJson(response.body);
 
-            if (requestDetailModel != null && requestDetailModel!.result == true) {
+            if (requestDetailModel != null &&
+                requestDetailModel!.result == true) {
               isLoading = true;
               update();
               return response.body;
             } else {
               print('Error: requestDetailModel is null or result is false');
+              return null;
             }
           } catch (e) {
             print('Error parsing RequestDetailModel: $e');
+            return null;
           }
         } else {
           print('Error: Invalid or unexpected API response');
+          return null;
         }
       } else {
         print('HTTP Error: ${response.statusCode} - ${response.reasonPhrase}');
+        return null;
       }
     } catch (e) {
       print('Error during API call: $e');
+      return null;
     }
   }
-
 }
