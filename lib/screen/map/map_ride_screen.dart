@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:action_slider/action_slider.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_svg/svg.dart';
@@ -95,17 +96,43 @@ class _MapRideScreenState extends State<MapRideScreen> {
   }
 
   @override
+  @override
   void initState() {
     getDarkMode();
     mapThemeStyle();
-    print(
-      "++++++++++++++++++++++++darkMode+++++++++++++++++++++++++++++ ${darkMode}",
-    );
-    print("********themeForMap************ $themeForMap");
-    print("785335timeStatus68628898 ${widget.timeStatus}");
+
+    // Initialize remainingTime2 and countdownStart before using them
+    countdownStart =
+        widget.timeStatus == "0" ? 0 : int.parse(widget.time.toString());
+    remainingTime = widget.timeStatus == "0" ? 0 : countdownStart;
+    remainingTime2 = int.parse(widget.time.toString());
+
+    if (kDebugMode) {
+      print(
+          "++++++++++++++++++++++++darkMode+++++++++++++++++++++++++++++ $darkMode");
+      print("********themeForMap************ $themeForMap");
+      print("785335timeStatus68628898 ${widget.timeStatus}");
+      print("************ $remainingTime2");
+    }
+
     super.initState();
     cancelRequestReasonController.cancelReasonApi(context: context);
-    print('************homeStatus_0--------------- $homeStatus');
+
+    if (kDebugMode) {
+      print('************homeStatus_0--------------- $homeStatus');
+    }
+
+    if (widget.timeStatus == "0") {
+      startTimerAdd1();
+      if (kDebugMode) print("PRATIK_1");
+    } else if (homeStatus == 0) {
+      startTimer();
+      if (kDebugMode) print("PRATIK_2");
+    } else {
+      startTimer1();
+      if (kDebugMode) print("PRATIK_3");
+    }
+
     socketConnect();
   }
 
@@ -168,7 +195,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
           timmer = remainingTime;
           // formatTime(remainingTime);
           print('++++++++++++++++------ (${timmer})');
-          print("+++++++++++remainingTime++++++++++++++ ${remainingTime}");
+          print("+++++++++++remainingTime++++++++++++++ 1${remainingTime}");
         } else {
           timer.cancel();
         }
@@ -187,7 +214,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
           timmer = remainingTime2;
           // formatTime(remainingTime);
           print('++++++++++++++++------ (${timmer})');
-          print("+++++++++++remainingTime++++++++++++++ ${remainingTime2}");
+          print("+++++++++++remainingTime++++++++++++++ 2 ${remainingTime2}");
         } else {
           timer.cancel();
         }
@@ -219,135 +246,130 @@ class _MapRideScreenState extends State<MapRideScreen> {
     socket.connect();
     _connectSocket();
 
-    requestDetailController.requestDetailApi(requestId: widget.requestId).then((
-      value,
-    ) {
-      Map<String, dynamic> mapData = json.decode(value);
+    try {
+      requestDetailController
+          .requestDetailApi(requestId: widget.requestId)
+          .then((
+        value,
+      ) {
+        if (kDebugMode) print("Raw API Response: $value");
 
-      // requestDetailController.requestDetailModel!.requestData.biddingStatus == "1" ? bottomSheetTime(requestID: widget.requestId.toString()) : const SizedBox();
+        try {
+          // Parse the JSON string response safely
+          Map<String, dynamic> mapData;
+          if (value is String) {
+            mapData = json.decode(value);
+          } else if (value is Map<String, dynamic>) {
+            mapData = value;
+          } else {
+            if (kDebugMode) {
+              print("Unexpected response type: ${value.runtimeType}");
+            }
+            return;
+          }
 
-      if (mapData["request_data"]["status"] == "1") {
-        var pickLatLon = mapData["request_data"]["pick_latlon"];
+          if (kDebugMode) print("Parsed mapData: $mapData");
 
-        if (pickLatLon is List) {
-          List<dynamic> dropOffPointsDynamic = pickLatLon;
-          print("------List------------- $dropOffPointsDynamic");
+          // Check if the response structure is valid
+          if (!mapData.containsKey("request_data") ||
+              mapData["request_data"] == null) {
+            if (kDebugMode) print("Missing or null request_data in response");
+            return;
+          }
 
-          mapLocationUpdateController.dropOffPoints = dropOffPointsDynamic.map((
-            item,
-          ) {
-            return PointLatLng(
-              double.parse(item["latitude"].toString()),
-              double.parse(item["longitude"].toString()),
-            );
-          }).toList();
-        } else if (pickLatLon is Map) {
-          // Handle the case where pick_latlon is a single object
-          mapLocationUpdateController.dropOffPoints = [
-            PointLatLng(
-              double.parse(pickLatLon["latitude"].toString()),
-              double.parse(pickLatLon["longitude"].toString()),
-            ),
-          ];
+          var requestData = mapData["request_data"];
+
+          // Process bidding status if needed
+          if (requestData.containsKey("biddingStatus")) {
+            // Handle bidding status logic here
+            if (kDebugMode) {
+              print("Bidding Status: ${requestData["biddingStatus"]}");
+            }
+          }
+
+          // Process pickup location safely
+          if (requestData.containsKey("pick_latlon") &&
+              requestData["pick_latlon"] != null) {
+            var pickLatLon = requestData["pick_latlon"];
+            if (pickLatLon.containsKey("latitude") &&
+                pickLatLon.containsKey("longitude")) {
+              double pickLat =
+                  double.tryParse(pickLatLon["latitude"].toString()) ?? 0.0;
+              double pickLng =
+                  double.tryParse(pickLatLon["longitude"].toString()) ?? 0.0;
+              if (kDebugMode) print("Pickup location: $pickLat, $pickLng");
+
+              // Add pickup marker
+              mapLocationUpdateController.addMarker2(
+                  LatLng(pickLat, pickLng), 'origin');
+            }
+          }
+
+          // Process drop-off locations safely
+          if (requestData.containsKey("drop_latlon") &&
+              requestData["drop_latlon"] != null) {
+            var dropLatLon = requestData["drop_latlon"];
+
+            // Handle both single drop-off and multiple drop-offs
+            List<dynamic> dropOffPointsDynamic = [];
+            if (dropLatLon is List) {
+              dropOffPointsDynamic = dropLatLon;
+            } else if (dropLatLon is Map) {
+              dropOffPointsDynamic = [dropLatLon];
+            }
+
+            if (kDebugMode) {
+              print("------List------------- $dropOffPointsDynamic");
+            }
+
+            // Convert to PointLatLng list
+            List<PointLatLng> dropOffPoints = dropOffPointsDynamic.map((item) {
+              double lat =
+                  double.tryParse(item["latitude"]?.toString() ?? "0") ?? 0.0;
+              double lng =
+                  double.tryParse(item["longitude"]?.toString() ?? "0") ?? 0.0;
+              return PointLatLng(lat, lng);
+            }).toList();
+
+            // Add drop-off markers
+            for (int a = 0; a < dropOffPoints.length; a++) {
+              mapLocationUpdateController.addMarker2(
+                  LatLng(dropOffPoints[a].latitude, dropOffPoints[a].longitude),
+                  'destination_$a');
+            }
+
+            // Get directions if we have pickup and drop-off points
+            if (requestData.containsKey("pick_latlon") &&
+                requestData["pick_latlon"] != null &&
+                dropOffPoints.isNotEmpty) {
+              var pickLatLon = requestData["pick_latlon"];
+              double pickLat =
+                  double.tryParse(pickLatLon["latitude"].toString()) ?? 0.0;
+              double pickLng =
+                  double.tryParse(pickLatLon["longitude"].toString()) ?? 0.0;
+
+              mapLocationUpdateController.getDirections11(
+                lat1: PointLatLng(pickLat, pickLng),
+                dropOffPoints: dropOffPoints,
+              );
+            }
+          }
+
+          // Update UI state
+          if (mounted) {
+            setState(() {
+              // Update any UI state here
+            });
+          }
+        } catch (parseError) {
+          if (kDebugMode) print("Error parsing API response: $parseError");
         }
-
-        print(
-          "++++++++++++++++latitude+++++++++++++++++++++ ${pickLatLon["latitude"]}",
-        );
-        print(
-          "++++++++++++++longitude++++++++++++++ ${pickLatLon["longitude"]}",
-        );
-        mapLocationUpdateController.startLiveTracking();
-
-        // _addMarker11(LatLng(double.parse(movingLat.toString()), double.parse(movingLong.toString())), "origin", BitmapDescriptor.defaultMarker);
-
-        for (int a = 0;
-            a < mapLocationUpdateController.dropOffPoints.length;
-            a++) {
-          mapLocationUpdateController.addMarker3("destination");
-        }
-
-        mapLocationUpdateController.addMarker2(
-          LatLng(
-            double.parse(pickLatLon["latitude"].toString()),
-            double.parse(pickLatLon["longitude"].toString()),
-          ),
-          'destination',
-        );
-
-        setState(() {});
-      } else if (mapData["request_data"]["status"] == "5" ||
-          mapData["request_data"]["status"] == "6") {
-        List<dynamic> dropOffPointsDynamic =
-            mapData["request_data"]["drop_latlon"];
-        print("------List------------- $dropOffPointsDynamic");
-
-        mapLocationUpdateController.dropOffPoints = dropOffPointsDynamic.map((
-          item,
-        ) {
-          return PointLatLng(
-            double.parse(item["latitude"].toString()),
-            double.parse(item["longitude"].toString()),
-          );
-        }).toList();
-
-        print(
-          "++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}",
-        );
-        print(
-          "++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}",
-        );
-        mapLocationUpdateController.startLiveTracking();
-        // mapLocationUpdateController.addMarkercurrent(LatLng(double.parse(mapData["request_data"]["pick_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["pick_latlon"]["longitude"].toString()),),"origin",BitmapDescriptor.defaultMarker);
-
-        for (int a = 0;
-            a < mapLocationUpdateController.dropOffPoints.length;
-            a++) {
-          mapLocationUpdateController.addMarker3("destination");
-        }
-
-        // mapLocationUpdateController.addMarker2(LatLng(double.parse(pickLatLon["latitude"].toString()), double.parse(pickLatLon["longitude"].toString()),), 'destination');
-
-        mapLocationUpdateController.getDirections11(
-          lat1: PointLatLng(
-            double.parse(
-              mapData["request_data"]["drop_latlon"]["latitude"].toString(),
-            ),
-            double.parse(
-              mapData["request_data"]["drop_latlon"]["longitude"].toString(),
-            ),
-          ),
-          dropOffPoints: mapLocationUpdateController.dropOffPoints,
-        );
-
-        setState(() {});
-      }
-    });
-    print("----------requestId------------ ${widget.requestId}");
-    print("----------time------------ ${widget.time}");
-
-    countdownStart = (int.parse(widget.time.toString()) * 60);
-    remainingTime = homeStatus == 1 ? 0 : countdownStart;
-    remainingTime2 = int.parse(widget.time.toString());
-
-    print("************ $remainingTime2");
-
-    if (widget.timeStatus == "0") {
-      startTimerAdd1();
-      print("PRATIK_1");
-    } else if (homeStatus == 0) {
-      startTimer();
-      print("PRATIK_2");
-    } else {
-      startTimer1();
-      print("PRATIK_3");
+      }).catchError((error) {
+        if (kDebugMode) print("API request error: $error");
+      });
+    } catch (e) {
+      if (kDebugMode) print("Socket connect error: $e");
     }
-
-    // homeStatus == 0
-    //     ? startTimer()
-    //     : startTimer1();
-
-    // widget.timeStatus == "1" ? startTimerAdd() : const SizedBox();
   }
 
   late int remainingTime2;
@@ -359,33 +381,57 @@ class _MapRideScreenState extends State<MapRideScreen> {
       'Vehicle_Ride_Cancel${getData.read("UserLogin")["id"].toString()}',
     );
 
-    socket.onConnect((data) => print('Connection established'));
-    socket.onConnectError((data) => print('Connect Error: $data'));
-    socket.onDisconnect((data) => print('Socket.IO server disconnected'));
+    socket.onConnect((data) {
+      if (kDebugMode) print('Connection established');
+    });
+
+    socket.onConnectError((data) {
+      if (kDebugMode) print('Connect Error: $data');
+    });
+
+    socket.onDisconnect((data) {
+      if (kDebugMode) print('Socket.IO server disconnected');
+    });
 
     socket.on(
       "Vehicle_Ride_Cancel${getData.read("UserLogin")["id"].toString()}",
       (status) {
-        print("++++++status++++++++++++++++ ${status}");
-        if (status["driverid"].toString().contains(
-              getData.read("UserLogin")["id"].toString(),
-            )) {
-          currentIndexBottom = 0;
-          // setState(() {
-          //
-          // });
-          Get.offAll(const BottomBarScreen());
-        } else {
-          print("UID Not Found");
+        if (kDebugMode) print("++++++status++++++++++++++++ $status");
+
+        try {
+          // Handle both String and Map data types
+          dynamic parsedStatus = status;
+          if (status is String) {
+            parsedStatus = jsonDecode(status);
+          }
+
+          if (parsedStatus is Map && parsedStatus.containsKey("driverid")) {
+            if (parsedStatus["driverid"].toString().contains(
+                  getData.read("UserLogin")["id"].toString(),
+                )) {
+              currentIndexBottom = 0;
+              Get.offAll(const BottomBarScreen());
+            } else {
+              if (kDebugMode) print("UID Not Found");
+            }
+          }
+        } catch (e) {
+          if (kDebugMode) print("Error parsing Vehicle_Ride_Cancel data: $e");
         }
       },
     );
+
     socket.on("Vehicle_Time_Request${getData.read("UserLogin")['id']}", (data) {
-      bottomSheetTime(requestID: widget.requestId.toString()).then((value) {
-        // setState(() {
-        //
-        // });
-      });
+      if (kDebugMode) print("Received Vehicle_Time_Request data: $data");
+
+      try {
+        // Handle the data safely - the error was likely here at line 314
+        bottomSheetTime(requestID: widget.requestId.toString()).then((value) {
+          // setState can be called here if needed
+        });
+      } catch (e) {
+        if (kDebugMode) print("Error handling Vehicle_Time_Request: $e");
+      }
     });
   }
 

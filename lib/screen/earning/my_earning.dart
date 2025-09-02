@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -533,409 +532,389 @@ class _MyEarningState extends State<MyEarning> {
                                                       12,
                                                     ),
                                                   ),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(
-                                                          10,
-                                                        ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Container(
-                                                                  height: 50,
-                                                                  width: 50,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    shape: BoxShape
-                                                                        .circle,
-                                                                    color: appColor
-                                                                        .withOpacity(
-                                                                      0.12,
-                                                                    ),
-                                                                  ),
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .directions_bike_rounded,
-                                                                    color:
-                                                                        appColor,
-                                                                    size: 22,
-                                                                  ),
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 8,
-                                                                ),
-                                                                Flexible(
-                                                                  child: Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    children: [
-                                                                      Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceBetween,
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.center,
-                                                                        children: [
-                                                                          Text(
-                                                                            "Trip #${myEarningController.myEarningModel!.rideData[index].id}",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: notifier.textColor,
-                                                                              fontSize: 14,
-                                                                              fontFamily: FontFamily.sofiaProBold,
-                                                                            ),
-                                                                          ),
-                                                                          Container(
-                                                                            alignment:
-                                                                                Alignment.center,
-                                                                            // height: 30,
-                                                                            padding:
-                                                                                const EdgeInsets.symmetric(
-                                                                              horizontal: 8,
-                                                                              vertical: 5,
-                                                                            ),
-                                                                            decoration:
-                                                                                BoxDecoration(
-                                                                              color: Colors.green.shade900,
-                                                                              borderRadius: BorderRadius.circular(
-                                                                                35,
-                                                                              ),
-                                                                            ),
-                                                                            child:
-                                                                                Text(
-                                                                              myEarningController.myEarningModel!.rideData[index].startTime,
-                                                                              style: TextStyle(
-                                                                                color: notifier.containerColor,
-                                                                                fontSize: 10,
-                                                                                fontFamily: FontFamily.sofiaProRegular,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      const SizedBox(
-                                                                        height:
-                                                                            8,
-                                                                      ),
-                                                                      Row(
-                                                                        children: [
-                                                                          Text(
-                                                                            "Estimate Usage: ".tr,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: greyText2,
-                                                                              fontSize: 12,
-                                                                              fontFamily: FontFamily.sofiaProRegular,
-                                                                            ),
-                                                                          ),
-                                                                          Text(
-                                                                            "${myEarningController.myEarningModel!.rideData[index].totMinute} Hrs ",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: notifier.textColor,
-                                                                              fontSize: 13,
-                                                                              fontFamily: FontFamily.sofiaProRegular,
-                                                                            ),
-                                                                          ),
-                                                                          const SizedBox(
-                                                                            width:
-                                                                                3,
-                                                                          ),
-                                                                          Container(
-                                                                            height:
-                                                                                12,
-                                                                            width:
-                                                                                1.5,
-                                                                            decoration:
-                                                                                BoxDecoration(
-                                                                              borderRadius: BorderRadius.circular(
-                                                                                25,
-                                                                              ),
-                                                                              color: notifier.borderColor,
-                                                                            ),
-                                                                          ),
-                                                                          const SizedBox(
-                                                                            width:
-                                                                                4,
-                                                                          ),
-                                                                          Text(
-                                                                            "Total Dist: ".tr,
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: greyText2,
-                                                                              fontSize: 12,
-                                                                              fontFamily: FontFamily.sofiaProRegular,
-                                                                            ),
-                                                                          ),
-                                                                          Text(
-                                                                            "${double.parse(myEarningController.myEarningModel!.rideData[index].totKm).toStringAsFixed(0)} Km",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: notifier.textColor,
-                                                                              fontSize: 13,
-                                                                              fontFamily: FontFamily.sofiaProRegular,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 10,
-                                                            ),
-                                                            Container(
-                                                              height: 1,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                  25,
-                                                                ),
-                                                                color: notifier
-                                                                    .borderColor,
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                left: 10,
-                                                              ),
-                                                              child: Column(
+                                                  child: SingleChildScrollView(
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(
+                                                            10,
+                                                          ),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
                                                                 crossAxisAlignment:
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          color: Colors
-                                                                              .green
-                                                                              .shade50,
-                                                                          shape:
-                                                                              BoxShape.circle,
-                                                                        ),
-                                                                        child:
-                                                                            Container(
-                                                                          height:
-                                                                              10,
-                                                                          width:
-                                                                              10,
-                                                                          margin:
-                                                                              const EdgeInsets.all(
-                                                                            6,
-                                                                          ),
-                                                                          decoration:
-                                                                              const BoxDecoration(
-                                                                            color:
-                                                                                Colors.green,
-                                                                            shape:
-                                                                                BoxShape.circle,
-                                                                          ),
-                                                                        ),
+                                                                  Container(
+                                                                    height: 50,
+                                                                    width: 50,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      shape: BoxShape
+                                                                          .circle,
+                                                                      color: appColor
+                                                                          .withOpacity(
+                                                                        0.12,
                                                                       ),
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            10,
-                                                                      ),
-                                                                      Flexible(
-                                                                        child:
-                                                                            Text(
-                                                                          "${myEarningController.myEarningModel!.rideData[index].picAddress.title}, ${myEarningController.myEarningModel!.rideData[index].picAddress.subtitle}",
-                                                                          style:
-                                                                              TextStyle(
-                                                                            color:
-                                                                                greyText2,
-                                                                            fontSize:
-                                                                                13.5,
-                                                                            fontFamily:
-                                                                                FontFamily.sofiaProRegular,
-                                                                          ),
-                                                                          maxLines:
-                                                                              1,
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                        ),
-                                                                      ),
-                                                                    ],
+                                                                    ),
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .directions_bike_rounded,
+                                                                      color:
+                                                                          appColor,
+                                                                      size: 22,
+                                                                    ),
                                                                   ),
                                                                   const SizedBox(
-                                                                    height: 5,
+                                                                    width: 8,
                                                                   ),
-                                                                  Row(
-                                                                    children: [
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            10,
-                                                                      ),
-                                                                      Container(
-                                                                        height:
-                                                                            20,
-                                                                        width:
-                                                                            1,
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(
-                                                                            25,
-                                                                          ),
-                                                                          color:
-                                                                              notifier.borderColor,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    height: 5,
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          color: Colors
-                                                                              .red
-                                                                              .shade50,
-                                                                          shape:
-                                                                              BoxShape.circle,
-                                                                        ),
-                                                                        child:
-                                                                            Container(
-                                                                          margin:
-                                                                              const EdgeInsets.all(
-                                                                            6,
-                                                                          ),
-                                                                          height:
-                                                                              10,
-                                                                          width:
-                                                                              10,
-                                                                          decoration:
-                                                                              const BoxDecoration(
-                                                                            color:
-                                                                                Colors.red,
-                                                                            shape:
-                                                                                BoxShape.circle,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      const SizedBox(
-                                                                        width:
-                                                                            10,
-                                                                      ),
-                                                                      Flexible(
-                                                                        child:
+                                                                  Flexible(
+                                                                    child:
+                                                                        Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: [
+                                                                        Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.spaceBetween,
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.center,
+                                                                          children: [
                                                                             Text(
-                                                                          "${myEarningController.myEarningModel!.rideData[index].dropAddress.title}, ${myEarningController.myEarningModel!.rideData[index].dropAddress.subtitle}",
-                                                                          style:
-                                                                              TextStyle(
-                                                                            color:
-                                                                                greyText2,
-                                                                            fontSize:
-                                                                                13.5,
-                                                                            fontFamily:
-                                                                                FontFamily.sofiaProRegular,
-                                                                          ),
-                                                                          maxLines:
-                                                                              1,
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
+                                                                              "Trip #${myEarningController.myEarningModel!.rideData[index].id}",
+                                                                              style: TextStyle(
+                                                                                color: notifier.textColor,
+                                                                                fontSize: 14,
+                                                                                fontFamily: FontFamily.sofiaProBold,
+                                                                              ),
+                                                                            ),
+                                                                            Container(
+                                                                              alignment: Alignment.center,
+                                                                              // height: 30,
+                                                                              padding: const EdgeInsets.symmetric(
+                                                                                horizontal: 8,
+                                                                                vertical: 5,
+                                                                              ),
+                                                                              decoration: BoxDecoration(
+                                                                                color: Colors.green.shade900,
+                                                                                borderRadius: BorderRadius.circular(
+                                                                                  35,
+                                                                                ),
+                                                                              ),
+                                                                              child: Text(
+                                                                                myEarningController.myEarningModel!.rideData[index].startTime,
+                                                                                style: TextStyle(
+                                                                                  color: notifier.containerColor,
+                                                                                  fontSize: 10,
+                                                                                  fontFamily: FontFamily.sofiaProRegular,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ],
                                                                         ),
-                                                                      ),
-                                                                    ],
+                                                                        const SizedBox(
+                                                                          height:
+                                                                              8,
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              "Estimate Usage: ".tr,
+                                                                              style: TextStyle(
+                                                                                color: greyText2,
+                                                                                fontSize: 12,
+                                                                                fontFamily: FontFamily.sofiaProRegular,
+                                                                              ),
+                                                                            ),
+                                                                            Text(
+                                                                              "${myEarningController.myEarningModel!.rideData[index].totMinute} Hrs ",
+                                                                              style: TextStyle(
+                                                                                color: notifier.textColor,
+                                                                                fontSize: 13,
+                                                                                fontFamily: FontFamily.sofiaProRegular,
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(
+                                                                              width: 3,
+                                                                            ),
+                                                                            Container(
+                                                                              height: 12,
+                                                                              width: 1.5,
+                                                                              decoration: BoxDecoration(
+                                                                                borderRadius: BorderRadius.circular(
+                                                                                  25,
+                                                                                ),
+                                                                                color: notifier.borderColor,
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(
+                                                                              width: 4,
+                                                                            ),
+                                                                            Text(
+                                                                              "Total Dist: ".tr,
+                                                                              style: TextStyle(
+                                                                                color: greyText2,
+                                                                                fontSize: 12,
+                                                                                fontFamily: FontFamily.sofiaProRegular,
+                                                                              ),
+                                                                            ),
+                                                                            Text(
+                                                                              "${double.parse(myEarningController.myEarningModel!.rideData[index].totKm).toStringAsFixed(0)} Km",
+                                                                              style: TextStyle(
+                                                                                color: notifier.textColor,
+                                                                                fontSize: 13,
+                                                                                fontFamily: FontFamily.sofiaProRegular,
+                                                                              ),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ],
+                                                                    ),
                                                                   ),
                                                                 ],
                                                               ),
-                                                            ),
-                                                          ],
+                                                              const SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                              Container(
+                                                                height: 1,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                    25,
+                                                                  ),
+                                                                  color: notifier
+                                                                      .borderColor,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 20,
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                  left: 10,
+                                                                ),
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Row(
+                                                                      children: [
+                                                                        Container(
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                Colors.green.shade50,
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                          ),
+                                                                          child:
+                                                                              Container(
+                                                                            height:
+                                                                                10,
+                                                                            width:
+                                                                                10,
+                                                                            margin:
+                                                                                const EdgeInsets.all(
+                                                                              6,
+                                                                            ),
+                                                                            decoration:
+                                                                                const BoxDecoration(
+                                                                              color: Colors.green,
+                                                                              shape: BoxShape.circle,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                          width:
+                                                                              10,
+                                                                        ),
+                                                                        Flexible(
+                                                                          child:
+                                                                              Text(
+                                                                            "${myEarningController.myEarningModel!.rideData[index].picAddress.title}, ${myEarningController.myEarningModel!.rideData[index].picAddress.subtitle}",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              color: greyText2,
+                                                                              fontSize: 13.5,
+                                                                              fontFamily: FontFamily.sofiaProRegular,
+                                                                            ),
+                                                                            maxLines:
+                                                                                1,
+                                                                            overflow:
+                                                                                TextOverflow.ellipsis,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height: 5,
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        const SizedBox(
+                                                                          width:
+                                                                              10,
+                                                                        ),
+                                                                        Container(
+                                                                          height:
+                                                                              20,
+                                                                          width:
+                                                                              1,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(
+                                                                              25,
+                                                                            ),
+                                                                            color:
+                                                                                notifier.borderColor,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      height: 5,
+                                                                    ),
+                                                                    Row(
+                                                                      children: [
+                                                                        Container(
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                Colors.red.shade50,
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                          ),
+                                                                          child:
+                                                                              Container(
+                                                                            margin:
+                                                                                const EdgeInsets.all(
+                                                                              6,
+                                                                            ),
+                                                                            height:
+                                                                                10,
+                                                                            width:
+                                                                                10,
+                                                                            decoration:
+                                                                                const BoxDecoration(
+                                                                              color: Colors.red,
+                                                                              shape: BoxShape.circle,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                          width:
+                                                                              10,
+                                                                        ),
+                                                                        Flexible(
+                                                                          child:
+                                                                              Text(
+                                                                            "${myEarningController.myEarningModel!.rideData[index].dropAddress.title}, ${myEarningController.myEarningModel!.rideData[index].dropAddress.subtitle}",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              color: greyText2,
+                                                                              fontSize: 13.5,
+                                                                              fontFamily: FontFamily.sofiaProRegular,
+                                                                            ),
+                                                                            maxLines:
+                                                                                1,
+                                                                            overflow:
+                                                                                TextOverflow.ellipsis,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 15,
-                                                      ),
-                                                      Container(
-                                                        alignment:
-                                                            Alignment.center,
-                                                        height: 50,
-                                                        width: Get.width,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: appColor
-                                                              .withOpacity(
-                                                            0.12,
-                                                          ),
-                                                          border: Border(
-                                                            top: BorderSide(
-                                                              color: notifier
-                                                                  .borderColor,
-                                                            ),
-                                                          ),
-                                                          borderRadius:
-                                                              const BorderRadius
-                                                                  .only(
-                                                            bottomLeft:
-                                                                Radius.circular(
-                                                              12,
-                                                            ),
-                                                            bottomRight:
-                                                                Radius.circular(
-                                                              12,
-                                                            ),
-                                                          ),
+                                                        const SizedBox(
+                                                          height: 15,
                                                         ),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            Icon(
-                                                              Icons.wallet,
-                                                              size: 22,
-                                                              color: appColor,
+                                                        Container(
+                                                          alignment:
+                                                              Alignment.center,
+                                                          height: 50,
+                                                          width: Get.width,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: appColor
+                                                                .withOpacity(
+                                                              0.12,
                                                             ),
-                                                            const SizedBox(
-                                                              width: 6,
-                                                            ),
-                                                            Text(
-                                                              "${getData.read("Currency")}${myEarningController.myEarningModel!.rideData[index].finalPrice}",
-                                                              style: TextStyle(
-                                                                color: appColor,
-                                                                fontSize: 17,
-                                                                fontFamily:
-                                                                    FontFamily
-                                                                        .sofiaProBold,
+                                                            border: Border(
+                                                              top: BorderSide(
+                                                                color: notifier
+                                                                    .borderColor,
                                                               ),
                                                             ),
-                                                          ],
+                                                            borderRadius:
+                                                                const BorderRadius
+                                                                    .only(
+                                                              bottomLeft: Radius
+                                                                  .circular(
+                                                                12,
+                                                              ),
+                                                              bottomRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                12,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Icon(
+                                                                Icons.wallet,
+                                                                size: 22,
+                                                                color: appColor,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 6,
+                                                              ),
+                                                              Text(
+                                                                "${getData.read("Currency")}${myEarningController.myEarningModel!.rideData[index].finalPrice}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  color:
+                                                                      appColor,
+                                                                  fontSize: 17,
+                                                                  fontFamily:
+                                                                      FontFamily
+                                                                          .sofiaProBold,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
                                                 );
                                               },

@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPageIndicator() {
-    Row row = Row(mainAxisAlignment: MainAxisAlignment.center, children: []);
+    Row row = const Row(mainAxisAlignment: MainAxisAlignment.center, children: []);
     for (int i = 0; i < _slides.length; i++) {
       row.children.add(_buildPageIndicatorItem(i));
       if (i != _slides.length - 1) row.children.add(const SizedBox(width: 10));

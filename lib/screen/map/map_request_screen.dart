@@ -376,24 +376,61 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
       }
     });
 
-    socket.on("Accept_Bidding${getData.read("UserLogin")["id"].toString()}", (
-      request,
-    ) {
-      print("+++<><><>+++request123456789<><><><><><<>${request}");
+    socket.on("Accept_Bidding${getData.read("UserLogin")["id"].toString()}",
+        (request) {
+      print("🚗 DRIVER: Accept_Bidding received!");
+      print("🚗 DRIVER: My driver ID: ${getData.read("UserLogin")["id"]}");
+      print("🚗 DRIVER: Raw data: $request");
+      print("🚗 DRIVER: Data type: ${request.runtimeType}");
+
+      if (request is Map) {
+        print("🚗 DRIVER: Keys available: ${request.keys}");
+        print("🚗 DRIVER: requestid: ${request["requestid"]}");
+        print("🚗 DRIVER: uid: ${request["uid"]}");
+        print("🚗 DRIVER: c_id: ${request["c_id"]}");
+      }
+
+      print("🚗 DRIVER: Setting homeStatus = 0");
       homeStatus = 0;
+
+      print(
+          "🚗 DRIVER: About to call requestDetailApi with: ${request["requestid"].toString()}");
+
       requestDetailController
           .requestDetailApi(requestId: request["requestid"].toString())
           .then((value) {
-        notificationSoundPlayer.stopNotificationSound();
-        Get.to(
-          MapRideScreen(
-            time: requestDetailController
-                .requestDetailModel!.requestData.totMinute
-                .toString(),
-            requestId: request["requestid"].toString(),
-          ),
-        );
+        print("🚗 DRIVER: API call completed");
+        print("🚗 DRIVER: Response value: $value");
+        print("🚗 DRIVER: Response is null: ${value == null}");
+
+        if (value != null) {
+          print("🚗 DRIVER: Stopping notification sound");
+          notificationSoundPlayer.stopNotificationSound();
+
+          print("🚗 DRIVER: About to navigate to MapRideScreen");
+          print(
+              "🚗 DRIVER: Time: ${requestDetailController.requestDetailModel?.requestData.totMinute}");
+          print("🚗 DRIVER: Request ID: ${request["requestid"].toString()}");
+
+          Get.to(
+            MapRideScreen(
+              time: requestDetailController
+                  .requestDetailModel!.requestData.totMinute
+                  .toString(),
+              requestId: request["requestid"].toString(),
+            ),
+          );
+
+          print("🚗 DRIVER: Navigation command executed");
+        } else {
+          print("🚗 DRIVER: ❌ API response was null - cannot navigate");
+        }
+      }).catchError((error) {
+        print("🚗 DRIVER: ❌ API call failed with error: $error");
+        print("🚗 DRIVER: ❌ Error type: ${error.runtimeType}");
       });
+
+      print("🚗 DRIVER: Accept_Bidding handler completed");
     });
 
     socket.on("Bidding_decline${getData.read("UserLogin")["id"].toString()}", (
@@ -2421,7 +2458,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                     children: [
                       Text(
                         "Offering your fare ${getData.read("Currency")}$price",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w500,
                           color: Colors.white,

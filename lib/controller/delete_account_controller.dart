@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:qareeb/config/config.dart';
-import 'package:qareeb/screen/auth_screen/login_screen.dart';
 import '../config/data_store.dart';
 import '../widget/common.dart';
 

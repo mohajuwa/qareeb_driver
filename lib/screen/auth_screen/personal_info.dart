@@ -785,7 +785,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                       InkWell(
                                         child: Text(
                                           tag,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.white,
                                           ),
                                         ),
@@ -964,7 +964,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                           InkWell(
                                             child: Text(
                                               tag,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.white,
                                               ),
                                             ),

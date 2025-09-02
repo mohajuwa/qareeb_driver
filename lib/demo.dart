@@ -1,10 +1,9 @@
-import 'dart:math';
 
 import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 

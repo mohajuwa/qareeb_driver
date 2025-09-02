@@ -68,7 +68,7 @@ class _ChatScreenState extends State<ChatScreen> {
     socket.onDisconnect((data) => print('Socket.IO server disconnected'));
 
     socket.on("New_Chat${getData.read("UserLogin")['id']}", (status){
-      print("==================== ${status}");
+      print("==================== $status");
       chatListController.chatListApi(context: context, customer: widget.customer.toString());
     });
 

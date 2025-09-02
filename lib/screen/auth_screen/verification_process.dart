@@ -289,7 +289,7 @@ class _VerificationProcessScreenState extends State<VerificationProcessScreen> {
                                                         "Verification Pending"
                                                             .tr,
                                                         style: TextStyle(
-                                                          color: Color(
+                                                          color: const Color(
                                                             0xffE68C00,
                                                           ),
                                                           fontSize: 12,
@@ -322,7 +322,7 @@ class _VerificationProcessScreenState extends State<VerificationProcessScreen> {
                                                             "Verification Complete"
                                                                 .tr,
                                                             style: TextStyle(
-                                                              color: Color(
+                                                              color: const Color(
                                                                 0xff00D261,
                                                               ),
                                                               fontSize: 12,
