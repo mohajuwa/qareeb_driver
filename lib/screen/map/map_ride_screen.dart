@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:action_slider/action_slider.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_svg/svg.dart';
@@ -55,12 +54,11 @@ class MapRideScreen extends StatefulWidget {
   final String time;
   final String requestId;
   final String? timeStatus;
-  const MapRideScreen({
-    super.key,
-    required this.time,
-    required this.requestId,
-    this.timeStatus,
-  });
+  const MapRideScreen(
+      {super.key,
+      required this.time,
+      required this.requestId,
+      this.timeStatus});
 
   @override
   State<MapRideScreen> createState() => _MapRideScreenState();
@@ -96,56 +94,31 @@ class _MapRideScreenState extends State<MapRideScreen> {
   }
 
   @override
-  @override
   void initState() {
     getDarkMode();
     mapThemeStyle();
-
-    // Initialize remainingTime2 and countdownStart before using them
-    countdownStart =
-        widget.timeStatus == "0" ? 0 : int.parse(widget.time.toString());
-    remainingTime = widget.timeStatus == "0" ? 0 : countdownStart;
-    remainingTime2 = int.parse(widget.time.toString());
-
-    if (kDebugMode) {
-      print(
-          "++++++++++++++++++++++++darkMode+++++++++++++++++++++++++++++ $darkMode");
-      print("********themeForMap************ $themeForMap");
-      print("785335timeStatus68628898 ${widget.timeStatus}");
-      print("************ $remainingTime2");
-    }
-
+    print(
+        "++++++++++++++++++++++++darkMode+++++++++++++++++++++++++++++ ${darkMode}");
+    print("********themeForMap************ $themeForMap");
+    print("785335timeStatus68628898 ${widget.timeStatus}");
     super.initState();
     cancelRequestReasonController.cancelReasonApi(context: context);
-
-    if (kDebugMode) {
-      print('************homeStatus_0--------------- $homeStatus');
-    }
-
-    if (widget.timeStatus == "0") {
-      startTimerAdd1();
-      if (kDebugMode) print("PRATIK_1");
-    } else if (homeStatus == 0) {
-      startTimer();
-      if (kDebugMode) print("PRATIK_2");
-    } else {
-      startTimer1();
-      if (kDebugMode) print("PRATIK_3");
-    }
-
+    print('************homeStatus_0--------------- $homeStatus');
     socketConnect();
   }
 
   mapThemeStyle() {
     if (darkMode == true) {
       setState(() {
-        DefaultAssetBundle.of(
-          context,
-        ).loadString("i_theme/dark_theme.json").then((value) {
-          setState(() {
-            themeForMap = value;
-          });
-        });
+        DefaultAssetBundle.of(context)
+            .loadString("i_theme/dark_theme.json")
+            .then(
+          (value) {
+            setState(() {
+              themeForMap = value;
+            });
+          },
+        );
       });
     }
   }
@@ -195,7 +168,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
           timmer = remainingTime;
           // formatTime(remainingTime);
           print('++++++++++++++++------ (${timmer})');
-          print("+++++++++++remainingTime++++++++++++++ 1${remainingTime}");
+          print("+++++++++++remainingTime++++++++++++++ ${remainingTime}");
         } else {
           timer.cancel();
         }
@@ -214,7 +187,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
           timmer = remainingTime2;
           // formatTime(remainingTime);
           print('++++++++++++++++------ (${timmer})');
-          print("+++++++++++remainingTime++++++++++++++ 2 ${remainingTime2}");
+          print("+++++++++++remainingTime++++++++++++++ ${remainingTime2}");
         } else {
           timer.cancel();
         }
@@ -246,130 +219,125 @@ class _MapRideScreenState extends State<MapRideScreen> {
     socket.connect();
     _connectSocket();
 
-    try {
-      requestDetailController
-          .requestDetailApi(requestId: widget.requestId)
-          .then((
-        value,
-      ) {
-        if (kDebugMode) print("Raw API Response: $value");
+    requestDetailController
+        .requestDetailApi(requestId: widget.requestId)
+        .then((value) {
+      Map<String, dynamic> mapData = json.decode(value);
 
-        try {
-          // Parse the JSON string response safely
-          Map<String, dynamic> mapData;
-          if (value is String) {
-            mapData = json.decode(value);
-          } else if (value is Map<String, dynamic>) {
-            mapData = value;
-          } else {
-            if (kDebugMode) {
-              print("Unexpected response type: ${value.runtimeType}");
-            }
-            return;
-          }
+      // requestDetailController.requestDetailModel!.requestData.biddingStatus == "1" ? bottomSheetTime(requestID: widget.requestId.toString()) : const SizedBox();
 
-          if (kDebugMode) print("Parsed mapData: $mapData");
+      if (mapData["request_data"]["status"] == "1") {
+        var pickLatLon = mapData["request_data"]["pick_latlon"];
 
-          // Check if the response structure is valid
-          if (!mapData.containsKey("request_data") ||
-              mapData["request_data"] == null) {
-            if (kDebugMode) print("Missing or null request_data in response");
-            return;
-          }
+        if (pickLatLon is List) {
+          List<dynamic> dropOffPointsDynamic = pickLatLon;
+          print("------List------------- $dropOffPointsDynamic");
 
-          var requestData = mapData["request_data"];
-
-          // Process bidding status if needed
-          if (requestData.containsKey("biddingStatus")) {
-            // Handle bidding status logic here
-            if (kDebugMode) {
-              print("Bidding Status: ${requestData["biddingStatus"]}");
-            }
-          }
-
-          // Process pickup location safely
-          if (requestData.containsKey("pick_latlon") &&
-              requestData["pick_latlon"] != null) {
-            var pickLatLon = requestData["pick_latlon"];
-            if (pickLatLon.containsKey("latitude") &&
-                pickLatLon.containsKey("longitude")) {
-              double pickLat =
-                  double.tryParse(pickLatLon["latitude"].toString()) ?? 0.0;
-              double pickLng =
-                  double.tryParse(pickLatLon["longitude"].toString()) ?? 0.0;
-              if (kDebugMode) print("Pickup location: $pickLat, $pickLng");
-
-              // Add pickup marker
-              mapLocationUpdateController.addMarker2(
-                  LatLng(pickLat, pickLng), 'origin');
-            }
-          }
-
-          // Process drop-off locations safely
-          if (requestData.containsKey("drop_latlon") &&
-              requestData["drop_latlon"] != null) {
-            var dropLatLon = requestData["drop_latlon"];
-
-            // Handle both single drop-off and multiple drop-offs
-            List<dynamic> dropOffPointsDynamic = [];
-            if (dropLatLon is List) {
-              dropOffPointsDynamic = dropLatLon;
-            } else if (dropLatLon is Map) {
-              dropOffPointsDynamic = [dropLatLon];
-            }
-
-            if (kDebugMode) {
-              print("------List------------- $dropOffPointsDynamic");
-            }
-
-            // Convert to PointLatLng list
-            List<PointLatLng> dropOffPoints = dropOffPointsDynamic.map((item) {
-              double lat =
-                  double.tryParse(item["latitude"]?.toString() ?? "0") ?? 0.0;
-              double lng =
-                  double.tryParse(item["longitude"]?.toString() ?? "0") ?? 0.0;
-              return PointLatLng(lat, lng);
-            }).toList();
-
-            // Add drop-off markers
-            for (int a = 0; a < dropOffPoints.length; a++) {
-              mapLocationUpdateController.addMarker2(
-                  LatLng(dropOffPoints[a].latitude, dropOffPoints[a].longitude),
-                  'destination_$a');
-            }
-
-            // Get directions if we have pickup and drop-off points
-            if (requestData.containsKey("pick_latlon") &&
-                requestData["pick_latlon"] != null &&
-                dropOffPoints.isNotEmpty) {
-              var pickLatLon = requestData["pick_latlon"];
-              double pickLat =
-                  double.tryParse(pickLatLon["latitude"].toString()) ?? 0.0;
-              double pickLng =
-                  double.tryParse(pickLatLon["longitude"].toString()) ?? 0.0;
-
-              mapLocationUpdateController.getDirections11(
-                lat1: PointLatLng(pickLat, pickLng),
-                dropOffPoints: dropOffPoints,
-              );
-            }
-          }
-
-          // Update UI state
-          if (mounted) {
-            setState(() {
-              // Update any UI state here
-            });
-          }
-        } catch (parseError) {
-          if (kDebugMode) print("Error parsing API response: $parseError");
+          mapLocationUpdateController.dropOffPoints =
+              dropOffPointsDynamic.map((item) {
+            return PointLatLng(
+              double.parse(item["latitude"].toString()),
+              double.parse(item["longitude"].toString()),
+            );
+          }).toList();
+        } else if (pickLatLon is Map) {
+          // Handle the case where pick_latlon is a single object
+          mapLocationUpdateController.dropOffPoints = [
+            PointLatLng(
+              double.parse(pickLatLon["latitude"].toString()),
+              double.parse(pickLatLon["longitude"].toString()),
+            )
+          ];
         }
-      }).catchError((error) {
-        if (kDebugMode) print("API request error: $error");
-      });
-    } catch (e) {
-      if (kDebugMode) print("Socket connect error: $e");
+
+        print(
+            "++++++++++++++++latitude+++++++++++++++++++++ ${pickLatLon["latitude"]}");
+        print(
+            "++++++++++++++longitude++++++++++++++ ${pickLatLon["longitude"]}");
+        mapLocationUpdateController.startLiveTracking();
+
+        // _addMarker11(LatLng(double.parse(movingLat.toString()), double.parse(movingLong.toString())), "origin", BitmapDescriptor.defaultMarker);
+
+        for (int a = 0;
+            a < mapLocationUpdateController.dropOffPoints.length;
+            a++) {
+          mapLocationUpdateController.addMarker3("destination");
+        }
+
+        mapLocationUpdateController.addMarker2(
+            LatLng(
+              double.parse(pickLatLon["latitude"].toString()),
+              double.parse(pickLatLon["longitude"].toString()),
+            ),
+            'destination');
+
+        setState(() {});
+      } else if (mapData["request_data"]["status"] == "5" ||
+          mapData["request_data"]["status"] == "6") {
+        List<dynamic> dropOffPointsDynamic =
+            mapData["request_data"]["drop_latlon"];
+        print("------List------------- $dropOffPointsDynamic");
+
+        mapLocationUpdateController.dropOffPoints =
+            dropOffPointsDynamic.map((item) {
+          return PointLatLng(
+            double.parse(item["latitude"].toString()),
+            double.parse(item["longitude"].toString()),
+          );
+        }).toList();
+
+        print(
+            "++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}");
+        print(
+            "++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}");
+        mapLocationUpdateController.startLiveTracking();
+        // mapLocationUpdateController.addMarkercurrent(LatLng(double.parse(mapData["request_data"]["pick_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["pick_latlon"]["longitude"].toString()),),"origin",BitmapDescriptor.defaultMarker);
+
+        for (int a = 0;
+            a < mapLocationUpdateController.dropOffPoints.length;
+            a++) {
+          mapLocationUpdateController.addMarker3("destination");
+        }
+
+        // mapLocationUpdateController.addMarker2(LatLng(double.parse(pickLatLon["latitude"].toString()), double.parse(pickLatLon["longitude"].toString()),), 'destination');
+
+        mapLocationUpdateController.getDirections11(
+          lat1: PointLatLng(
+              double.parse(mapData["request_data"]["drop_latlon"]["latitude"]
+                  .toString()),
+              double.parse(mapData["request_data"]["drop_latlon"]["longitude"]
+                  .toString())),
+          dropOffPoints: mapLocationUpdateController.dropOffPoints,
+        );
+
+        setState(() {});
+      }
+    });
+    print("----------requestId------------ ${widget.requestId}");
+    print("----------time------------ ${widget.time}");
+
+    countdownStart = (int.parse(widget.time.toString()) * 60);
+    remainingTime = homeStatus == 1 ? 0 : countdownStart;
+    remainingTime2 = int.parse(widget.time.toString());
+
+    print("************ $remainingTime2");
+
+    if (widget.timeStatus == "0") {
+      startTimerAdd1();
+      print("PRATIK_1");
+    } else if (homeStatus == 0) {
+      startTimer();
+      print("PRATIK_2");
+    } else {
+      startTimer1();
+      print("PRATIK_3");
     }
+
+    // homeStatus == 0
+    //     ? startTimer()
+    //     : startTimer1();
+
+    // widget.timeStatus == "1" ? startTimerAdd() : const SizedBox();
   }
 
   late int remainingTime2;
@@ -378,60 +346,36 @@ class _MapRideScreenState extends State<MapRideScreen> {
   _connectSocket() {
     socket.off('Vehicle_Time_Request${getData.read("UserLogin")['id']}');
     socket.off(
-      'Vehicle_Ride_Cancel${getData.read("UserLogin")["id"].toString()}',
-    );
+        'Vehicle_Ride_Cancel${getData.read("UserLogin")["id"].toString()}');
 
-    socket.onConnect((data) {
-      if (kDebugMode) print('Connection established');
-    });
+    socket.onConnect((data) => print('Connection established'));
+    socket.onConnectError((data) => print('Connect Error: $data'));
+    socket.onDisconnect((data) => print('Socket.IO server disconnected'));
 
-    socket.onConnectError((data) {
-      if (kDebugMode) print('Connect Error: $data');
-    });
-
-    socket.onDisconnect((data) {
-      if (kDebugMode) print('Socket.IO server disconnected');
-    });
-
-    socket.on(
-      "Vehicle_Ride_Cancel${getData.read("UserLogin")["id"].toString()}",
-      (status) {
-        if (kDebugMode) print("++++++status++++++++++++++++ $status");
-
-        try {
-          // Handle both String and Map data types
-          dynamic parsedStatus = status;
-          if (status is String) {
-            parsedStatus = jsonDecode(status);
-          }
-
-          if (parsedStatus is Map && parsedStatus.containsKey("driverid")) {
-            if (parsedStatus["driverid"].toString().contains(
-                  getData.read("UserLogin")["id"].toString(),
-                )) {
-              currentIndexBottom = 0;
-              Get.offAll(const BottomBarScreen());
-            } else {
-              if (kDebugMode) print("UID Not Found");
-            }
-          }
-        } catch (e) {
-          if (kDebugMode) print("Error parsing Vehicle_Ride_Cancel data: $e");
-        }
-      },
-    );
-
-    socket.on("Vehicle_Time_Request${getData.read("UserLogin")['id']}", (data) {
-      if (kDebugMode) print("Received Vehicle_Time_Request data: $data");
-
-      try {
-        // Handle the data safely - the error was likely here at line 314
-        bottomSheetTime(requestID: widget.requestId.toString()).then((value) {
-          // setState can be called here if needed
-        });
-      } catch (e) {
-        if (kDebugMode) print("Error handling Vehicle_Time_Request: $e");
+    socket
+        .on("Vehicle_Ride_Cancel${getData.read("UserLogin")["id"].toString()}",
+            (status) {
+      print("++++++status++++++++++++++++ ${status}");
+      if (status["driverid"]
+          .toString()
+          .contains(getData.read("UserLogin")["id"].toString())) {
+        currentIndexBottom = 0;
+        // setState(() {
+        //
+        // });
+        Get.offAll(const BottomBarScreen());
+      } else {
+        print("UID Not Found");
       }
+    });
+    socket.on("Vehicle_Time_Request${getData.read("UserLogin")['id']}", (data) {
+      bottomSheetTime(requestID: widget.requestId.toString()).then(
+        (value) {
+          // setState(() {
+          //
+          // });
+        },
+      );
     });
   }
 
@@ -443,14 +387,10 @@ class _MapRideScreenState extends State<MapRideScreen> {
 
   Future<Uint8List> getImages11(String path, int width) async {
     ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(),
-      targetHeight: width,
-    );
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetHeight: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(
-      format: ui.ImageByteFormat.png,
-    ))!
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
         .buffer
         .asUint8List();
   }
@@ -463,21 +403,18 @@ class _MapRideScreenState extends State<MapRideScreen> {
     // socket.off('Vehicle_Time_Request');
     socket.off('Vehicle_Time_Request${getData.read("UserLogin")['id']}');
     socket.off(
-      'Vehicle_Ride_Cancel${getData.read("UserLogin")["id"].toString()}',
-    );
+        'Vehicle_Ride_Cancel${getData.read("UserLogin")["id"].toString()}');
     super.dispose();
   }
 
-  RequestDetailController requestDetailController = Get.put(
-    RequestDetailController(),
-  );
+  RequestDetailController requestDetailController =
+      Get.put(RequestDetailController());
   IAmHereController iAmHereController = Get.put(IAmHereController());
   OtpRideController otpRideController = Get.put(OtpRideController());
   final DraggableScrollableController sheetController =
       DraggableScrollableController();
-  MapLocationUpdateController mapLocationUpdateController = Get.put(
-    MapLocationUpdateController(),
-  );
+  MapLocationUpdateController mapLocationUpdateController =
+      Get.put(MapLocationUpdateController());
 
   bool isLoading = false;
   num? iAmHereTime;
@@ -506,23 +443,24 @@ class _MapRideScreenState extends State<MapRideScreen> {
     }
   }
 
-  List timeData = ["5", "10", "15", "20"];
+  List timeData = [
+    "5",
+    "10",
+    "15",
+    "20",
+  ];
 
   TimeController timeController = Get.put(TimeController());
-  CheckVehicleRequestController checkVehicleRequestController = Get.put(
-    CheckVehicleRequestController(),
-  );
+  CheckVehicleRequestController checkVehicleRequestController =
+      Get.put(CheckVehicleRequestController());
   RideStartController rideStartController = Get.put(RideStartController());
   RideCancelController rideCancelController = Get.put(RideCancelController());
-  CancelRequestController cancelRequestController = Get.put(
-    CancelRequestController(),
-  );
-  CancelRequestReasonController cancelRequestReasonController = Get.put(
-    CancelRequestReasonController(),
-  );
-  NotificationController notificationController = Get.put(
-    NotificationController(),
-  );
+  CancelRequestController cancelRequestController =
+      Get.put(CancelRequestController());
+  CancelRequestReasonController cancelRequestReasonController =
+      Get.put(CancelRequestReasonController());
+  NotificationController notificationController =
+      Get.put(NotificationController());
 
   final Completer<GoogleMapController> _controller = Completer();
 
@@ -547,120 +485,102 @@ class _MapRideScreenState extends State<MapRideScreen> {
         backgroundColor: notifier.containerColor,
         elevation: 0,
         automaticallyImplyLeading: false,
-        leading: GetBuilder<RequestDetailController>(
-          builder: (context) {
-            return requestDetailController.isLoading
-                ? requestDetailController
-                                .requestDetailModel!.requestData.status ==
-                            "1" ||
-                        requestDetailController
-                                .requestDetailModel!.requestData.status ==
-                            "2" ||
-                        requestDetailController
-                                .requestDetailModel!.requestData.status ==
-                            "3" ||
-                        requestDetailController
-                                .requestDetailModel!.requestData.status ==
-                            "5" ||
-                        requestDetailController
-                                .requestDetailModel!.requestData.status ==
-                            "6" ||
-                        requestDetailController
-                                .requestDetailModel!.requestData.status ==
-                            "7"
-                    ? GestureDetector(
-                        onTap: () {
-                          checkVehicleRequestController
-                              .checkVehicleApi(
-                            uid: getData.read("UserLogin")["id"].toString(),
-                          )
-                              .then((value) {
-                            if (requestDetailController.requestDetailModel!.requestData.status == "1" ||
-                                requestDetailController.requestDetailModel!
-                                        .requestData.status ==
-                                    "2" ||
-                                requestDetailController.requestDetailModel!
-                                        .requestData.status ==
-                                    "3" ||
-                                requestDetailController.requestDetailModel!
-                                        .requestData.status ==
-                                    "5" ||
-                                requestDetailController.requestDetailModel!
-                                        .requestData.status ==
-                                    "6" ||
-                                requestDetailController.requestDetailModel!
-                                        .requestData.status ==
-                                    "7") {
-                              currentIndexBottom = 0;
-                              homeStatus = 1;
-                              setState(() {});
-                              print(
-                                '************homeStatus_1--------------- $homeStatus',
-                              );
-                              Get.offAll(const BottomBarScreen());
-                            }
-                          });
-                        },
-                        child: Icon(
-                          Icons.arrow_back,
-                          size: 20,
-                          color: notifier.textColor,
-                        ),
-                      )
-                    : const SizedBox()
-                : const SizedBox();
-          },
-        ),
+        leading: GetBuilder<RequestDetailController>(builder: (context) {
+          return requestDetailController.isLoading
+              ? requestDetailController
+                              .requestDetailModel!.requestData.status ==
+                          "1" ||
+                      requestDetailController.requestDetailModel!.requestData.status ==
+                          "2" ||
+                      requestDetailController.requestDetailModel!.requestData.status ==
+                          "3" ||
+                      requestDetailController.requestDetailModel!.requestData.status ==
+                          "5" ||
+                      requestDetailController
+                              .requestDetailModel!.requestData.status ==
+                          "6" ||
+                      requestDetailController
+                              .requestDetailModel!.requestData.status ==
+                          "7"
+                  ? GestureDetector(
+                      onTap: () {
+                        checkVehicleRequestController
+                            .checkVehicleApi(
+                                uid: getData.read("UserLogin")["id"].toString())
+                            .then((value) {
+                          if (requestDetailController.requestDetailModel!.requestData.status == "1" ||
+                              requestDetailController
+                                      .requestDetailModel!.requestData.status ==
+                                  "2" ||
+                              requestDetailController
+                                      .requestDetailModel!.requestData.status ==
+                                  "3" ||
+                              requestDetailController
+                                      .requestDetailModel!.requestData.status ==
+                                  "5" ||
+                              requestDetailController
+                                      .requestDetailModel!.requestData.status ==
+                                  "6" ||
+                              requestDetailController
+                                      .requestDetailModel!.requestData.status ==
+                                  "7") {
+                            currentIndexBottom = 0;
+                            homeStatus = 1;
+                            setState(() {});
+                            print(
+                                '************homeStatus_1--------------- $homeStatus');
+                            Get.offAll(const BottomBarScreen());
+                          }
+                        });
+                      },
+                      child: Icon(Icons.arrow_back,
+                          size: 20, color: notifier.textColor))
+                  : const SizedBox()
+              : const SizedBox();
+        }),
         title: GetBuilder<RequestDetailController>(
-          builder: (requestDetailController) {
-            return requestDetailController.isLoading
-                ? requestDetailController
-                            .requestDetailModel!.requestData.status ==
-                        "1"
-                    ? Row(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              requestCancel();
-                            },
-                            child: Text(
-                              "Cancel".tr,
-                              style: TextStyle(
-                                color: notifier.textColor,
-                                fontSize: 18,
-                                letterSpacing: 0.5,
-                                fontFamily: FontFamily.sofiaProBold,
-                              ),
-                            ),
+            builder: (requestDetailController) {
+          return requestDetailController.isLoading
+              ? requestDetailController
+                          .requestDetailModel!.requestData.status ==
+                      "1"
+                  ? Row(children: [
+                      InkWell(
+                        onTap: () {
+                          requestCancel();
+                        },
+                        child: Text(
+                          "Cancel".tr,
+                          style: TextStyle(
+                            color: notifier.textColor,
+                            fontSize: 18,
+                            letterSpacing: 0.5,
+                            fontFamily: FontFamily.sofiaProBold,
                           ),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: () {
-                              bottomSheetTime(
-                                requestID: widget.requestId.toString(),
-                              );
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: 38,
-                              width: 38,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: appColor.withOpacity(0.12),
-                              ),
-                              child: Icon(
-                                Icons.timer_rounded,
-                                size: 18.5,
-                                color: appColor,
-                              ),
-                            ),
+                        ),
+                      ),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          bottomSheetTime(
+                              requestID: widget.requestId.toString());
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 38,
+                          width: 38,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: appColor.withOpacity(0.12),
                           ),
-                        ],
-                      )
-                    : const SizedBox()
-                : const SizedBox();
-          },
-        ),
+                          child: Icon(Icons.timer_rounded,
+                              size: 18.5, color: appColor),
+                        ),
+                      ),
+                    ])
+                  : const SizedBox()
+              : const SizedBox();
+        }),
         actions: [
           GestureDetector(
             onTap: () {
@@ -681,529 +601,485 @@ class _MapRideScreenState extends State<MapRideScreen> {
         ],
       ),
       body: GetBuilder<RequestDetailController>(
-        builder: (requestDetailController) {
-          return requestDetailController.isLoading
-              ? WillPopScope(
-                  onWillPop: () async {
-                    bool shouldPop = true;
-                    await checkVehicleRequestController
-                        .checkVehicleApi(
-                      uid: getData.read("UserLogin")["id"].toString(),
-                    )
-                        .then((value) {
-                      if (requestDetailController.requestDetailModel!.requestData.status == "2" ||
-                          requestDetailController
-                                  .requestDetailModel!.requestData.status ==
-                              "3" ||
-                          requestDetailController
-                                  .requestDetailModel!.requestData.status ==
-                              "5" ||
-                          requestDetailController
-                                  .requestDetailModel!.requestData.status ==
-                              "6" ||
-                          requestDetailController
-                                  .requestDetailModel!.requestData.status ==
-                              "7") {
-                        currentIndexBottom = 0;
-                        homeStatus = 1;
-                        setState(() {});
-                        print(
-                          '************homeStatus_1--------------- $homeStatus',
-                        );
-                        Get.offAll(const BottomBarScreen());
-                        shouldPop = false;
-                      }
-                    });
-                    return shouldPop;
-                  },
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: LatLng(movingLat ?? lat, movingLong ?? long),
-                          zoom: 16,
-                        ),
-                        myLocationEnabled: false,
-                        tiltGesturesEnabled: true,
-                        compassEnabled: true,
-                        scrollGesturesEnabled: true,
-                        zoomGesturesEnabled: true,
-                        onMapCreated: (GoogleMapController controller) {
-                          controller.setMapStyle(themeForMap);
-                          _controller.complete(controller);
-                        },
-                        // onMapCreated: _onMapCreated11,
-                        markers: Set<Marker>.of(
-                          mapLocationUpdateController.markers11.values,
-                        ),
-                        polylines: Set<Polyline>.of(
-                          mapLocationUpdateController.polylines11.values,
-                        ),
+          builder: (requestDetailController) {
+        return requestDetailController.isLoading
+            ? WillPopScope(
+                onWillPop: () async {
+                  bool shouldPop = true;
+                  await checkVehicleRequestController
+                      .checkVehicleApi(
+                          uid: getData.read("UserLogin")["id"].toString())
+                      .then((value) {
+                    if (requestDetailController.requestDetailModel!.requestData.status == "2" ||
+                        requestDetailController
+                                .requestDetailModel!.requestData.status ==
+                            "3" ||
+                        requestDetailController
+                                .requestDetailModel!.requestData.status ==
+                            "5" ||
+                        requestDetailController
+                                .requestDetailModel!.requestData.status ==
+                            "6" ||
+                        requestDetailController
+                                .requestDetailModel!.requestData.status ==
+                            "7") {
+                      currentIndexBottom = 0;
+                      homeStatus = 1;
+                      setState(() {});
+                      print(
+                          '************homeStatus_1--------------- $homeStatus');
+                      Get.offAll(const BottomBarScreen());
+                      shouldPop = false;
+                    }
+                  });
+                  return shouldPop;
+                },
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(movingLat ?? lat, movingLong ?? long),
+                        zoom: 16,
                       ),
-                      Container(
-                        width: Get.width,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: notifier.containerColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          visualDensity: VisualDensity.compact,
-                          title: Padding(
-                            padding: const EdgeInsets.only(bottom: 3),
-                            child: Text(
-                              requestDetailController.requestDetailModel!
-                                          .requestData.status ==
-                                      "2"
-                                  ? "Enter OTP"
-                                  : requestDetailController.requestDetailModel!
-                                                  .requestData.status ==
-                                              "3" ||
-                                          requestDetailController
-                                                  .requestDetailModel!
-                                                  .requestData
-                                                  .status ==
-                                              "6"
-                                      ? "Start the ride"
-                                      : requestDetailController
-                                                  .requestDetailModel!
-                                                  .requestData
-                                                  .status ==
-                                              "5"
-                                          ? "End the ride"
-                                          : "Drive to pickup",
-                              style: TextStyle(
-                                color: notifier.textColor,
-                                fontSize: 16,
-                                letterSpacing: 0.5,
-                                fontFamily: FontFamily.sofiaProBold,
-                              ),
-                            ),
-                          ),
-                          subtitle: Text(
-                            "Please don't be late",
+                      myLocationEnabled: false,
+                      tiltGesturesEnabled: true,
+                      compassEnabled: true,
+                      scrollGesturesEnabled: true,
+                      zoomGesturesEnabled: true,
+                      onMapCreated: (GoogleMapController controller) {
+                        controller.setMapStyle(themeForMap);
+                        _controller.complete(controller);
+                      },
+                      // onMapCreated: _onMapCreated11,
+                      markers: Set<Marker>.of(
+                          mapLocationUpdateController.markers11.values),
+                      polylines: Set<Polyline>.of(
+                          mapLocationUpdateController.polylines11.values),
+                    ),
+                    Container(
+                      width: Get.width,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: notifier.containerColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                        title: Padding(
+                          padding: const EdgeInsets.only(bottom: 3),
+                          child: Text(
+                            requestDetailController.requestDetailModel!
+                                        .requestData.status ==
+                                    "2"
+                                ? "Enter OTP"
+                                : requestDetailController.requestDetailModel!
+                                                .requestData.status ==
+                                            "3" ||
+                                        requestDetailController
+                                                .requestDetailModel!
+                                                .requestData
+                                                .status ==
+                                            "6"
+                                    ? "Start the ride"
+                                    : requestDetailController
+                                                .requestDetailModel!
+                                                .requestData
+                                                .status ==
+                                            "5"
+                                        ? "End the ride"
+                                        : "Drive to pickup",
                             style: TextStyle(
                               color: notifier.textColor,
                               fontSize: 16,
                               letterSpacing: 0.5,
-                              fontFamily: FontFamily.sofiaProRegular,
+                              fontFamily: FontFamily.sofiaProBold,
                             ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                homeStatus == 0
-                                    ? formatTime(remainingTime)
-                                    : formatTime2(remainingTime2),
-                                style: TextStyle(
-                                  color: appColor,
-                                  fontSize: 25,
-                                  letterSpacing: 0.5,
-                                  fontFamily: FontFamily.sofiaProBold,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                            ],
                           ),
                         ),
-                      ),
-                      Positioned(
-                        top: Get.height - 550,
-                        // top: -50,
-                        left: 10,
-                        child: GestureDetector(
-                          onTap: () async {
-                            // List<LatLng> locations = requestDetailController.requestDetailModel!.requestData.dropLatlon
-                            //     .map((latlon) => LatLng(double.parse(latlon.latitude), double.parse(latlon.longitude)))
-                            //     .toList();
-                            //
-                            //
-                            // String waypoints = locations.skip(1).map((location) => '${location.latitude},${location.longitude}').join('|');
-                            //
-                            // await launchUrl(Uri.parse(
-                            //     'google.navigation:q=${locations[0].latitude},${locations[0].longitude}&waypoints=$waypoints&key=${Config.mapKey}'
-                            // ));
-                            await launchUrl(
-                              Uri.parse(
-                                'google.navigation:q=${double.parse(requestDetailController.requestDetailModel!.requestData.dropLatlon[0].latitude)}, ${double.parse(requestDetailController.requestDetailModel!.requestData.dropLatlon[0].longitude)}&key="${Config.mapKey}"',
+                        subtitle: Text(
+                          "Please don't be late",
+                          style: TextStyle(
+                            color: notifier.textColor,
+                            fontSize: 16,
+                            letterSpacing: 0.5,
+                            fontFamily: FontFamily.sofiaProRegular,
+                          ),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              homeStatus == 0
+                                  ? formatTime(remainingTime)
+                                  : formatTime2(remainingTime2),
+                              style: TextStyle(
+                                color: appColor,
+                                fontSize: 25,
+                                letterSpacing: 0.5,
+                                fontFamily: FontFamily.sofiaProBold,
                               ),
-                            );
-                          },
-                          child: Container(
-                            height: 40,
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            decoration: BoxDecoration(
-                              color: blackColor,
-                              borderRadius: BorderRadius.circular(30),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
+                            const SizedBox(width: 12),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: Get.height - 550,
+                      // top: -50,
+                      left: 10,
+                      child: GestureDetector(
+                        onTap: () async {
+                          // List<LatLng> locations = requestDetailController.requestDetailModel!.requestData.dropLatlon
+                          //     .map((latlon) => LatLng(double.parse(latlon.latitude), double.parse(latlon.longitude)))
+                          //     .toList();
+                          //
+                          //
+                          // String waypoints = locations.skip(1).map((location) => '${location.latitude},${location.longitude}').join('|');
+                          //
+                          // await launchUrl(Uri.parse(
+                          //     'google.navigation:q=${locations[0].latitude},${locations[0].longitude}&waypoints=$waypoints&key=${Config.mapKey}'
+                          // ));
+                          await launchUrl(Uri.parse(
+                              'google.navigation:q=${double.parse(requestDetailController.requestDetailModel!.requestData.dropLatlon[0].latitude)}, ${double.parse(requestDetailController.requestDetailModel!.requestData.dropLatlon[0].longitude)}&key="${Config.mapKey}"'));
+                        },
+                        child: Container(
+                          height: 40,
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          decoration: BoxDecoration(
+                            color: blackColor,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
                                   height: 22,
                                   child: Image.asset(
                                     "assets/image/location-arrow.png",
                                     color: whiteColor,
-                                  ),
+                                  )),
+                              const SizedBox(width: 5),
+                              Text(
+                                "Navigate",
+                                style: TextStyle(
+                                  color: whiteColor,
+                                  fontSize: 15,
+                                  letterSpacing: 0.5,
+                                  fontFamily: FontFamily.sofiaProBold,
                                 ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  "Navigate",
-                                  style: TextStyle(
-                                    color: whiteColor,
-                                    fontSize: 15,
-                                    letterSpacing: 0.5,
-                                    fontFamily: FontFamily.sofiaProBold,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      DraggableScrollableSheet(
-                        controller: sheetController,
-                        builder: (BuildContext context, scrollController) {
-                          return Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Container(
-                                clipBehavior: Clip.hardEdge,
-                                padding: const EdgeInsets.only(
-                                  top: 10,
-                                  bottom: 10,
-                                  left: 5,
-                                  right: 8,
+                    ),
+                    DraggableScrollableSheet(
+                      controller: sheetController,
+                      builder: (BuildContext context, scrollController) {
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              clipBehavior: Clip.hardEdge,
+                              padding: const EdgeInsets.only(
+                                  top: 10, bottom: 10, left: 5, right: 8),
+                              decoration: BoxDecoration(
+                                color: notifier.containerColor,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(25),
+                                  topRight: Radius.circular(25),
                                 ),
-                                decoration: BoxDecoration(
-                                  color: notifier.containerColor,
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(25),
-                                    topRight: Radius.circular(25),
-                                  ),
-                                ),
-                                child: CustomScrollView(
-                                  controller: scrollController,
-                                  slivers: [
-                                    SliverList.list(
-                                      children: [
-                                        Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Column(
-                                                  // crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Container(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      height: 70,
-                                                      width: 70,
-                                                      decoration: BoxDecoration(
-                                                        color: appColor,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: Text(
-                                                        requestDetailController
-                                                            .requestDetailModel!
-                                                            .requestData
-                                                            .name[0]
-                                                            .toUpperCase(),
-                                                        style: TextStyle(
-                                                          color: whiteColor,
-                                                          fontSize: 18,
-                                                          fontFamily: FontFamily
-                                                              .sofiaProBold,
-                                                        ),
-                                                      ),
+                              ),
+                              child: CustomScrollView(
+                                controller: scrollController,
+                                slivers: [
+                                  SliverList.list(
+                                    children: [
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Column(
+                                                // crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    alignment: Alignment.center,
+                                                    height: 70,
+                                                    width: 70,
+                                                    decoration: BoxDecoration(
+                                                      color: appColor,
+                                                      shape: BoxShape.circle,
                                                     ),
-                                                    const SizedBox(height: 4),
-                                                    Text(
+                                                    child: Text(
                                                       requestDetailController
                                                           .requestDetailModel!
                                                           .requestData
-                                                          .name,
+                                                          .name[0]
+                                                          .toUpperCase(),
                                                       style: TextStyle(
-                                                        color:
-                                                            notifier.textColor,
-                                                        fontSize: 16,
+                                                        color: whiteColor,
+                                                        fontSize: 18,
                                                         fontFamily: FontFamily
-                                                            .sofiaProRegular,
+                                                            .sofiaProBold,
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
-                                                const SizedBox(width: 6),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      const SizedBox(height: 6),
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          RotatedBox(
-                                                            quarterTurns: 2,
-                                                            child: Icon(
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    requestDetailController
+                                                        .requestDetailModel!
+                                                        .requestData
+                                                        .name,
+                                                    style: TextStyle(
+                                                      color: notifier.textColor,
+                                                      fontSize: 16,
+                                                      fontFamily: FontFamily
+                                                          .sofiaProRegular,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const SizedBox(height: 6),
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        RotatedBox(
+                                                          quarterTurns: 2,
+                                                          child: Icon(
                                                               CupertinoIcons
                                                                   .location_north_fill,
                                                               size: 20,
-                                                              color: appColor,
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 6,
-                                                          ),
-                                                          Flexible(
-                                                            child: Text(
-                                                              "${requestDetailController.requestDetailModel!.requestData.pickAdd.title} ${requestDetailController.requestDetailModel!.requestData.pickAdd.subtitle}",
-                                                              style: TextStyle(
-                                                                color: notifier
-                                                                    .textColor,
-                                                                fontSize: 13,
-                                                                letterSpacing:
-                                                                    0.5,
-                                                                fontFamily:
-                                                                    FontFamily
-                                                                        .sofiaProBold,
-                                                              ),
-                                                              maxLines: 3,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 14,
-                                                      ),
-                                                      ListView.separated(
-                                                        shrinkWrap: true,
-                                                        physics:
-                                                            const NeverScrollableScrollPhysics(),
-                                                        padding:
-                                                            EdgeInsets.zero,
-                                                        itemCount:
-                                                            requestDetailController
-                                                                .requestDetailModel!
-                                                                .requestData
-                                                                .dropAdd
-                                                                .length,
-                                                        separatorBuilder:
-                                                            (context, index) =>
-                                                                const SizedBox(
-                                                          height: 14,
+                                                              color: appColor),
                                                         ),
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          return Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              SizedBox(
-                                                                height: 20,
-                                                                width: 20,
-                                                                child:
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                  "assets/image/loaction_circle.svg",
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 6,
-                                                              ),
-                                                              Flexible(
-                                                                child: Text(
-                                                                  "${requestDetailController.requestDetailModel!.requestData.dropAdd[index].title} ${requestDetailController.requestDetailModel!.requestData.dropAdd[index].subtitle}",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color:
-                                                                        greyText,
-                                                                    fontSize:
-                                                                        13,
-                                                                    letterSpacing:
-                                                                        0.5,
-                                                                    height: 1.1,
-                                                                    fontFamily:
-                                                                        FontFamily
-                                                                            .sofiaProBold,
-                                                                  ),
-                                                                  maxLines: 3,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          const SizedBox(
-                                                            width: 25,
-                                                          ),
-                                                          Text(
-                                                            "${getData.read("Currency")}${double.parse(requestDetailController.requestDetailModel!.requestData.price.toString())}",
+                                                        const SizedBox(
+                                                            width: 6),
+                                                        Flexible(
+                                                          child: Text(
+                                                            "${requestDetailController.requestDetailModel!.requestData.pickAdd.title} ${requestDetailController.requestDetailModel!.requestData.pickAdd.subtitle}",
                                                             style: TextStyle(
                                                               color: notifier
                                                                   .textColor,
-                                                              fontSize: 20,
+                                                              fontSize: 13,
+                                                              letterSpacing:
+                                                                  0.5,
                                                               fontFamily: FontFamily
                                                                   .sofiaProBold,
                                                             ),
-                                                            maxLines: 2,
+                                                            maxLines: 3,
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
                                                           ),
-                                                          const Spacer(),
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              setState(() {
-                                                                _makingPhoneCall(
-                                                                  number:
-                                                                      "${requestDetailController.requestDetailModel!.requestData.countryCode}${requestDetailController.requestDetailModel!.requestData.phone}",
-                                                                );
-                                                              });
-                                                            },
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              height: 50,
-                                                              width: 50,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                                color: appColor
-                                                                    .withOpacity(
-                                                                  0.12,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 14),
+                                                    ListView.separated(
+                                                      shrinkWrap: true,
+                                                      physics:
+                                                          const NeverScrollableScrollPhysics(),
+                                                      padding: EdgeInsets.zero,
+                                                      itemCount:
+                                                          requestDetailController
+                                                              .requestDetailModel!
+                                                              .requestData
+                                                              .dropAdd
+                                                              .length,
+                                                      separatorBuilder:
+                                                          (context, index) =>
+                                                              const SizedBox(
+                                                                  height: 14),
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        return Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            SizedBox(
+                                                                height: 20,
+                                                                width: 20,
+                                                                child: SvgPicture
+                                                                    .asset(
+                                                                        "assets/image/loaction_circle.svg")),
+                                                            const SizedBox(
+                                                                width: 6),
+                                                            Flexible(
+                                                              child: Text(
+                                                                "${requestDetailController.requestDetailModel!.requestData.dropAdd[index].title} ${requestDetailController.requestDetailModel!.requestData.dropAdd[index].subtitle}",
+                                                                style:
+                                                                    TextStyle(
+                                                                  color:
+                                                                      greyText,
+                                                                  fontSize: 13,
+                                                                  letterSpacing:
+                                                                      0.5,
+                                                                  height: 1.1,
+                                                                  fontFamily:
+                                                                      FontFamily
+                                                                          .sofiaProBold,
                                                                 ),
-                                                              ),
-                                                              child: Icon(
-                                                                Icons.call,
-                                                                size: 23,
-                                                                color: appColor,
+                                                                maxLines: 3,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                               ),
                                                             ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    ),
+                                                    const SizedBox(height: 20),
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        const SizedBox(
+                                                            width: 25),
+                                                        Text(
+                                                          "${getData.read("Currency")}${double.parse(requestDetailController.requestDetailModel!.requestData.price.toString())}",
+                                                          style: TextStyle(
+                                                            color: notifier
+                                                                .textColor,
+                                                            fontSize: 20,
+                                                            fontFamily: FontFamily
+                                                                .sofiaProBold,
                                                           ),
-                                                          const SizedBox(
-                                                            width: 10,
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                        const Spacer(),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              _makingPhoneCall(
+                                                                  number:
+                                                                      "${requestDetailController.requestDetailModel!.requestData.countryCode}${requestDetailController.requestDetailModel!.requestData.phone}");
+                                                            });
+                                                          },
+                                                          child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            height: 50,
+                                                            width: 50,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              color: appColor
+                                                                  .withOpacity(
+                                                                      0.12),
+                                                            ),
+                                                            child: Icon(
+                                                                Icons.call,
+                                                                size: 23,
+                                                                color:
+                                                                    appColor),
                                                           ),
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              Get.to(
-                                                                ChatScreen(
-                                                                  customer: requestDetailController
-                                                                      .requestDetailModel!
-                                                                      .requestData
-                                                                      .cId
-                                                                      .toString(),
-                                                                ),
-                                                              );
-                                                            },
-                                                            child: Container(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .center,
-                                                              height: 50,
-                                                              width: 50,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                                color: appColor
-                                                                    .withOpacity(
-                                                                  0.12,
-                                                                ),
-                                                              ),
-                                                              child: Icon(
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 10),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            Get.to(ChatScreen(
+                                                              customer: requestDetailController
+                                                                  .requestDetailModel!
+                                                                  .requestData
+                                                                  .cId
+                                                                  .toString(),
+                                                            ));
+                                                          },
+                                                          child: Container(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            height: 50,
+                                                            width: 50,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              color: appColor
+                                                                  .withOpacity(
+                                                                      0.12),
+                                                            ),
+                                                            child: Icon(
                                                                 CupertinoIcons
                                                                     .chat_bubble_2_fill,
                                                                 size: 23,
-                                                                color: appColor,
-                                                              ),
-                                                            ),
+                                                                color:
+                                                                    appColor),
                                                           ),
-                                                          const SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 20),
-                                            requestDetailController
-                                                        .requestDetailModel!
-                                                        .requestData
-                                                        .status ==
-                                                    "1"
-                                                ? iAmHereController.isCircle
-                                                    ? Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          color: appColor,
                                                         ),
-                                                      )
-                                                    : button(
-                                                        text: "I'm here",
-                                                        color: appColor,
-                                                        onPress: () {
-                                                          setState(() {
-                                                            iAmHereController
-                                                                    .isCircle =
-                                                                true;
-                                                          });
-                                                          homeStatus = 0;
-                                                          mapLocationUpdateController
-                                                              .dropOffPoints = [];
-                                                          mapLocationUpdateController
-                                                              .markers11 = {};
+                                                        const SizedBox(
+                                                            width: 10),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 20),
+                                          requestDetailController
+                                                      .requestDetailModel!
+                                                      .requestData
+                                                      .status ==
+                                                  "1"
+                                              ? iAmHereController.isCircle
+                                                  ? Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                              color: appColor),
+                                                    )
+                                                  : button(
+                                                      text: "I'm here",
+                                                      color: appColor,
+                                                      onPress: () {
+                                                        setState(() {
                                                           iAmHereController
-                                                              .iAmHereApi(
-                                                            context: context,
-                                                            requestID: widget
-                                                                .requestId
-                                                                .toString(),
-                                                          )
-                                                              .then((value) {
+                                                              .isCircle = true;
+                                                        });
+                                                        homeStatus = 0;
+                                                        mapLocationUpdateController
+                                                            .dropOffPoints = [];
+                                                        mapLocationUpdateController
+                                                            .markers11 = {};
+                                                        iAmHereController
+                                                            .iAmHereApi(
+                                                                context:
+                                                                    context,
+                                                                requestID: widget
+                                                                    .requestId
+                                                                    .toString())
+                                                            .then(
+                                                          (value) {
                                                             Map<String, dynamic>
                                                                 decodedValue =
                                                                 json.decode(
-                                                              value,
-                                                            );
+                                                                    value);
 
                                                             if (decodedValue[
                                                                     "Result"] ==
@@ -1212,55 +1088,47 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                   decodedValue[
                                                                       "driver_wait_time"];
                                                               countdownStart =
-                                                                  (int.parse(
-                                                                        iAmHereTime
-                                                                            .toString(),
-                                                                      ) *
+                                                                  (int.parse(iAmHereTime
+                                                                          .toString()) *
                                                                       60);
                                                               remainingTime =
                                                                   countdownStart; // Initialize remainingTime
                                                               startTimer();
                                                               print(
-                                                                "++++++++++iAmHereTime++++++++++++++++ ${iAmHereTime}",
-                                                              );
+                                                                  "++++++++++iAmHereTime++++++++++++++++ ${iAmHereTime}");
                                                               socket.emit(
-                                                                'Vehicle_D_IAmHere',
-                                                                {
-                                                                  'uid': getData
-                                                                      .read(
-                                                                        "UserLogin",
-                                                                      )["id"]
-                                                                      .toString(),
-                                                                  'c_id': requestDetailController
-                                                                      .requestDetailModel!
-                                                                      .requestData
-                                                                      .cId
-                                                                      .toString(),
-                                                                  'request_id': widget
-                                                                      .requestId
-                                                                      .toString(),
-                                                                  'pickuptime':
-                                                                      decodedValue[
-                                                                          "driver_wait_time"],
-                                                                },
-                                                              );
+                                                                  'Vehicle_D_IAmHere',
+                                                                  {
+                                                                    'uid': getData
+                                                                        .read("UserLogin")[
+                                                                            "id"]
+                                                                        .toString(),
+                                                                    'c_id': requestDetailController
+                                                                        .requestDetailModel!
+                                                                        .requestData
+                                                                        .cId
+                                                                        .toString(),
+                                                                    'request_id': widget
+                                                                        .requestId
+                                                                        .toString(),
+                                                                    'pickuptime':
+                                                                        decodedValue[
+                                                                            "driver_wait_time"],
+                                                                  });
                                                               requestDetailController
                                                                   .requestDetailApi(
-                                                                requestId: widget
-                                                                    .requestId,
-                                                              )
-                                                                  .then((
-                                                                value,
-                                                              ) {
+                                                                      requestId:
+                                                                          widget
+                                                                              .requestId)
+                                                                  .then(
+                                                                      (value) {
                                                                 Map<String,
                                                                         dynamic>
                                                                     mapData =
                                                                     json.decode(
-                                                                  value,
-                                                                );
+                                                                        value);
                                                                 print(
-                                                                  "++++++++++++++++ ${mapData}",
-                                                                );
+                                                                    "++++++++++++++++ ${mapData}");
 
                                                                 List<dynamic>
                                                                     dropOffPointsDynamic =
@@ -1268,35 +1136,27 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                         [
                                                                         "drop_latlon"];
                                                                 print(
-                                                                  "------List------------- $dropOffPointsDynamic",
-                                                                );
+                                                                    "------List------------- $dropOffPointsDynamic");
 
                                                                 mapLocationUpdateController
                                                                         .dropOffPoints =
                                                                     dropOffPointsDynamic
-                                                                        .map((
-                                                                  item,
-                                                                ) {
+                                                                        .map(
+                                                                            (item) {
                                                                   return PointLatLng(
-                                                                    double
-                                                                        .parse(
-                                                                      item["latitude"]
-                                                                          .toString(),
-                                                                    ),
-                                                                    double
-                                                                        .parse(
-                                                                      item["longitude"]
-                                                                          .toString(),
-                                                                    ),
+                                                                    double.parse(
+                                                                        item["latitude"]
+                                                                            .toString()),
+                                                                    double.parse(
+                                                                        item["longitude"]
+                                                                            .toString()),
                                                                   );
                                                                 }).toList();
 
                                                                 print(
-                                                                  "++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}",
-                                                                );
+                                                                    "++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}");
                                                                 print(
-                                                                  "++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}",
-                                                                );
+                                                                    "++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}");
                                                                 mapLocationUpdateController
                                                                     .startLiveTracking();
                                                                 // mapLocationUpdateController.addMarkercurrent(LatLng(double.parse(mapData["request_data"]["pick_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["pick_latlon"]["longitude"].toString()),),"origin",BitmapDescriptor.defaultMarker);
@@ -1309,39 +1169,28 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                     a++) {
                                                                   mapLocationUpdateController
                                                                       .addMarker3(
-                                                                    "destination",
-                                                                  );
+                                                                          "destination");
                                                                 }
 
                                                                 // mapLocationUpdateController.addMarker2(LatLng(double.parse(pickLatLon["latitude"].toString()), double.parse(pickLatLon["longitude"].toString()),), 'destination');
 
                                                                 mapLocationUpdateController
                                                                     .getDirections11(
-                                                                  lat1:
-                                                                      PointLatLng(
-                                                                    double
-                                                                        .parse(
-                                                                      mapData["request_data"]["drop_latlon"]
+                                                                  lat1: PointLatLng(
+                                                                      double.parse(mapData["request_data"]["drop_latlon"]
                                                                               [
                                                                               "latitude"]
-                                                                          .toString(),
-                                                                    ),
-                                                                    double
-                                                                        .parse(
-                                                                      mapData["request_data"]["drop_latlon"]
+                                                                          .toString()),
+                                                                      double.parse(mapData["request_data"]["drop_latlon"]
                                                                               [
                                                                               "longitude"]
-                                                                          .toString(),
-                                                                    ),
-                                                                  ),
+                                                                          .toString())),
                                                                   dropOffPoints:
                                                                       mapLocationUpdateController
                                                                           .dropOffPoints,
                                                                 );
 
-                                                                setState(
-                                                                  () {},
-                                                                );
+                                                                setState(() {});
                                                               });
                                                               setState(() {
                                                                 iAmHereController
@@ -1355,223 +1204,414 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                     false;
                                                               });
                                                               snackBar(
-                                                                context:
-                                                                    context,
-                                                                text:
-                                                                    "Something Went Wrong",
-                                                              );
+                                                                  context:
+                                                                      context,
+                                                                  text:
+                                                                      "Something Went Wrong");
                                                             }
-                                                          });
-                                                        },
-                                                      )
-                                                : requestDetailController
-                                                            .requestDetailModel!
-                                                            .requestData
-                                                            .status ==
-                                                        "2"
-                                                    ? button(
-                                                        text: "Enter OTP",
-                                                        color: appColor,
-                                                        onPress: () {
-                                                          setState(() {
-                                                            otpBottomSheet();
-                                                          });
-                                                        },
-                                                      )
-                                                    : requestDetailController
-                                                                    .requestDetailModel!
-                                                                    .requestData
-                                                                    .status ==
-                                                                "3" ||
-                                                            requestDetailController
-                                                                    .requestDetailModel!
-                                                                    .requestData
-                                                                    .status ==
-                                                                "6"
-                                                        ? rideStartController
-                                                                .isCircle
-                                                            ? Center(
-                                                                child:
-                                                                    CircularProgressIndicator(
+                                                          },
+                                                        );
+                                                      },
+                                                    )
+                                              : requestDetailController
+                                                          .requestDetailModel!
+                                                          .requestData
+                                                          .status ==
+                                                      "2"
+                                                  ? button(
+                                                      text: "Enter OTP",
+                                                      color: appColor,
+                                                      onPress: () {
+                                                        setState(() {
+                                                          otpBottomSheet();
+                                                        });
+                                                      })
+                                                  : requestDetailController
+                                                                  .requestDetailModel!
+                                                                  .requestData
+                                                                  .status ==
+                                                              "3" ||
+                                                          requestDetailController
+                                                                  .requestDetailModel!
+                                                                  .requestData
+                                                                  .status ==
+                                                              "6"
+                                                      ? rideStartController
+                                                              .isCircle
+                                                          ? Center(
+                                                              child: CircularProgressIndicator(
                                                                   color:
-                                                                      appColor,
-                                                                ),
-                                                              )
-                                                            : Center(
-                                                                child: Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .symmetric(
+                                                                      appColor))
+                                                          : Center(
+                                                              child: Padding(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
                                                                     horizontal:
-                                                                        10,
+                                                                        10),
+                                                                child:
+                                                                    ActionSlider
+                                                                        .standard(
+                                                                  sliderBehavior:
+                                                                      SliderBehavior
+                                                                          .stretch,
+                                                                  rolling: true,
+                                                                  width: double
+                                                                      .infinity,
+                                                                  height: 60,
+                                                                  boxShadow: const [
+                                                                    BoxShadow(),
+                                                                  ],
+                                                                  backgroundColor:
+                                                                      appColor,
+                                                                  toggleColor:
+                                                                      Colors
+                                                                          .white,
+                                                                  iconAlignment:
+                                                                      Alignment
+                                                                          .centerRight,
+                                                                  loadingIcon:
+                                                                      Center(
+                                                                          child:
+                                                                              SizedBox(
+                                                                    height: 35,
+                                                                    width: 35,
+                                                                    child: CircularProgressIndicator(
+                                                                        color:
+                                                                            appColor),
+                                                                  )),
+                                                                  successIcon:
+                                                                      Center(
+                                                                    child: SizedBox(
+                                                                        width: 35,
+                                                                        child: Center(
+                                                                            child: Icon(
+                                                                          Icons
+                                                                              .check_rounded,
+                                                                          color: Colors
+                                                                              .green
+                                                                              .shade500,
+                                                                          size:
+                                                                              30,
+                                                                        ))),
                                                                   ),
-                                                                  child: ActionSlider
-                                                                      .standard(
-                                                                    sliderBehavior:
-                                                                        SliderBehavior
-                                                                            .stretch,
-                                                                    rolling:
-                                                                        true,
-                                                                    width: double
-                                                                        .infinity,
-                                                                    height: 60,
-                                                                    boxShadow: const [
-                                                                      BoxShadow(),
-                                                                    ],
-                                                                    backgroundColor:
-                                                                        appColor,
-                                                                    toggleColor:
-                                                                        Colors
-                                                                            .white,
-                                                                    iconAlignment:
-                                                                        Alignment
-                                                                            .centerRight,
-                                                                    loadingIcon:
-                                                                        Center(
-                                                                      child:
-                                                                          SizedBox(
-                                                                        height:
-                                                                            35,
-                                                                        width:
-                                                                            35,
-                                                                        child:
-                                                                            CircularProgressIndicator(
+                                                                  icon: Center(
+                                                                    child: SizedBox(
+                                                                        width: 35,
+                                                                        child: Center(
+                                                                            child: Icon(
+                                                                          Icons
+                                                                              .refresh_rounded,
                                                                           color:
                                                                               appColor,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    successIcon:
-                                                                        Center(
-                                                                      child:
-                                                                          SizedBox(
-                                                                        width:
-                                                                            35,
-                                                                        child:
-                                                                            Center(
-                                                                          child:
-                                                                              Icon(
-                                                                            Icons.check_rounded,
-                                                                            color:
-                                                                                Colors.green.shade500,
-                                                                            size:
-                                                                                30,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    icon:
-                                                                        Center(
-                                                                      child:
-                                                                          SizedBox(
-                                                                        width:
-                                                                            35,
-                                                                        child:
-                                                                            Center(
-                                                                          child:
-                                                                              Icon(
-                                                                            Icons.refresh_rounded,
-                                                                            color:
-                                                                                appColor,
-                                                                            size:
-                                                                                30,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    action:
-                                                                        (controller) async {
-                                                                      // 🔄 Set initial loading state
-                                                                      controller
-                                                                          .loading();
-                                                                      setState(
-                                                                          () {
-                                                                        rideStartController.isCircle =
-                                                                            true;
-                                                                      });
-
-                                                                      try {
-                                                                        // Call the API and wait for the response
-                                                                        var value =
-                                                                            await rideStartController.rideStartApi(
-                                                                          context:
-                                                                              context,
-                                                                          requestId: widget
-                                                                              .requestId
-                                                                              .toString(),
-                                                                        );
-
-                                                                        // ✅ SAFETY CHECK #1: Handle null response from a failed API call
-                                                                        if (value ==
-                                                                            null) {
-                                                                          print(
-                                                                              "API call failed and returned null. Action aborted.");
-                                                                          // The snackbar is already shown in the controller, so we just exit the try block.
-                                                                          // The 'finally' block below will handle resetting the UI.
-                                                                          return;
-                                                                        }
-
-                                                                        // Decode the JSON response
+                                                                          size:
+                                                                              30,
+                                                                        ))),
+                                                                  ),
+                                                                  action:
+                                                                      (controller) async {
+                                                                    controller
+                                                                        .loading();
+                                                                    mapLocationUpdateController
+                                                                        .dropOffPoints = [];
+                                                                    mapLocationUpdateController
+                                                                        .markers11 = {};
+                                                                    rideStartController
+                                                                        .rideStartApi(
+                                                                            context:
+                                                                                context,
+                                                                            requestId:
+                                                                                widget.requestId.toString())
+                                                                        .then(
+                                                                      (value) {
                                                                         Map<String,
                                                                                 dynamic>
                                                                             decodedValue =
                                                                             json.decode(value);
-
-                                                                        // ✅ SAFETY CHECK #2: Handle the business logic success/failure
                                                                         if (decodedValue["Result"] ==
                                                                             true) {
-                                                                          // 🚀 SUCCESS LOGIC: The ride has started
-                                                                          print(
-                                                                              "Ride started successfully. Emitting socket event.");
-                                                                          socket
-                                                                              .emit(
-                                                                            'Vehicle_Ride_Start_End',
-                                                                            {
-                                                                              'uid': getData.read("UserLogin")["id"].toString(),
-                                                                              'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
-                                                                              'request_id': widget.requestId.toString(),
-                                                                            },
-                                                                          );
-
-                                                                          // Update local state and timers
+                                                                          socket.emit(
+                                                                              'Vehicle_Ride_Start_End',
+                                                                              {
+                                                                                'uid': getData.read("UserLogin")["id"].toString(),
+                                                                                'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
+                                                                                'request_id': widget.requestId.toString(),
+                                                                              });
                                                                           remainingTime =
                                                                               0;
                                                                           timer
                                                                               ?.cancel();
                                                                           startTimerAdd();
+                                                                          // requestDetailController.requestDetailApi(context: context, requestId: widget.requestId.toString());
+                                                                          setState(
+                                                                              () {});
+                                                                          requestDetailController
+                                                                              .requestDetailApi(requestId: widget.requestId)
+                                                                              .then((value) async {
+                                                                            Map<String, dynamic>
+                                                                                mapData =
+                                                                                json.decode(value);
+                                                                            print("++++++++++++++++ ${mapData}");
+                                                                            // await mapLocationUpdateController.removeMarker('origin');
 
-                                                                          // Refresh the ride details from the server
-                                                                          requestDetailController.requestDetailApi(
-                                                                              requestId: widget.requestId);
+                                                                            List<dynamic>
+                                                                                dropOffPointsDynamic =
+                                                                                mapData["request_data"]["drop_latlon"];
+                                                                            print("------List------------- $dropOffPointsDynamic");
+
+                                                                            mapLocationUpdateController.dropOffPoints =
+                                                                                dropOffPointsDynamic.map((item) {
+                                                                              return PointLatLng(
+                                                                                double.parse(item["latitude"].toString()),
+                                                                                double.parse(item["longitude"].toString()),
+                                                                              );
+                                                                            }).toList();
+
+                                                                            print("++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}");
+                                                                            print("++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}");
+                                                                            mapLocationUpdateController.startLiveTracking();
+                                                                            // mapLocationUpdateController.addMarkercurrent(LatLng(double.parse(mapData["request_data"]["pick_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["pick_latlon"]["longitude"].toString()),),"origin",BitmapDescriptor.defaultMarker);
+
+                                                                            for (int a = 0;
+                                                                                a < mapLocationUpdateController.dropOffPoints.length;
+                                                                                a++) {
+                                                                              mapLocationUpdateController.addMarker3("destination");
+                                                                            }
+
+                                                                            // mapLocationUpdateController.addMarker2(LatLng(double.parse(pickLatLon["latitude"].toString()), double.parse(pickLatLon["longitude"].toString()),), 'destination');
+
+                                                                            mapLocationUpdateController.getDirections11(
+                                                                              lat1: PointLatLng(double.parse(mapData["request_data"]["drop_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["drop_latlon"]["longitude"].toString())),
+                                                                              dropOffPoints: mapLocationUpdateController.dropOffPoints,
+                                                                            );
+
+                                                                            setState(() {
+                                                                              rideStartController.isCircle = false;
+                                                                            });
+                                                                          });
                                                                         } else {
-                                                                          // 🛑 The API worked, but the server responded with an error (e.g., "Result": false).
-                                                                          // The snackbar for this case is already handled inside your rideStartController.
-                                                                          print(
-                                                                              "API call successful, but operation failed on the server.");
+                                                                          snackBar(
+                                                                              context: context,
+                                                                              text: "Something Went Wrong");
+                                                                          setState(
+                                                                              () {
+                                                                            rideStartController.isCircle =
+                                                                                false;
+                                                                          });
                                                                         }
-                                                                      } catch (e) {
-                                                                        // 🛑 CATCH ALL ERRORS: Catches network failures, JSON parsing errors, etc.
-                                                                        print(
-                                                                            "An unexpected error occurred in the swipe action: $e");
-                                                                        snackBar(
-                                                                            context:
-                                                                                context,
-                                                                            text:
-                                                                                "An unexpected error occurred. Please try again.");
-                                                                      } finally {
-                                                                        // 🔄 ALWAYS RUNS: This guarantees the UI is reset, preventing a stuck button.
-                                                                        print(
-                                                                            "Resetting swipe button state.");
-                                                                        setState(
-                                                                            () {
-                                                                          rideStartController.isCircle =
-                                                                              false;
-                                                                        });
-
-                                                                        // Animate the button back to its initial state
+                                                                      },
+                                                                    );
+                                                                    await Future.delayed(const Duration(
+                                                                        seconds:
+                                                                            3));
+                                                                    controller
+                                                                        .success();
+                                                                    await Future.delayed(const Duration(
+                                                                        seconds:
+                                                                            1));
+                                                                    controller
+                                                                        .reset();
+                                                                  },
+                                                                  child: Text(
+                                                                    'Swipe To Start Ride',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      fontFamily:
+                                                                          FontFamily
+                                                                              .sofiaProBold,
+                                                                      color:
+                                                                          whiteColor,
+                                                                      letterSpacing:
+                                                                          0.4,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            )
+                                                      // button(text: "Start the ride", color: Colors.green.shade500,
+                                                      //     onPress: (){
+                                                      //       setState(() {
+                                                      //         rideStartController.isCircle = true;
+                                                      //       });
+                                                      //       mapLocationUpdateController.dropOffPoints = [];
+                                                      //       mapLocationUpdateController.markers11 = {};
+                                                      //       rideStartController.rideStartApi(context: context, requestId: widget.requestId.toString()).then((value) {
+                                                      //         Map<String, dynamic> decodedValue = json.decode(value);
+                                                      //         if(decodedValue["Result"] == true){
+                                                      //           socket.emit('Vehicle_Ride_Start_End',{
+                                                      //             'uid': getData.read("UserLogin")["id"].toString(),
+                                                      //             'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
+                                                      //             'request_id': widget.requestId.toString(),
+                                                      //           });
+                                                      //           remainingTime = 0;
+                                                      //           timer?.cancel();
+                                                      //           startTimerAdd();
+                                                      //           // requestDetailController.requestDetailApi(context: context, requestId: widget.requestId.toString());
+                                                      //           setState(() { });
+                                                      //           requestDetailController.requestDetailApi(requestId: widget.requestId).then((value) async{
+                                                      //             Map<String, dynamic> mapData = json.decode(value);
+                                                      //             print("++++++++++++++++ ${mapData}");
+                                                      //             // await mapLocationUpdateController.removeMarker('origin');
+                                                      //
+                                                      //             List<dynamic> dropOffPointsDynamic = mapData["request_data"]["drop_latlon"];
+                                                      //             print("------List------------- $dropOffPointsDynamic");
+                                                      //
+                                                      //             mapLocationUpdateController.dropOffPoints = dropOffPointsDynamic.map((item) {
+                                                      //               return PointLatLng(
+                                                      //                 double.parse(item["latitude"].toString()),
+                                                      //                 double.parse(item["longitude"].toString()),
+                                                      //               );
+                                                      //             }).toList();
+                                                      //
+                                                      //             print("++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}");
+                                                      //             print("++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}");
+                                                      //             mapLocationUpdateController.startLiveTracking();
+                                                      //             // mapLocationUpdateController.addMarkercurrent(LatLng(double.parse(mapData["request_data"]["pick_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["pick_latlon"]["longitude"].toString()),),"origin",BitmapDescriptor.defaultMarker);
+                                                      //
+                                                      //             for (int a = 0; a < mapLocationUpdateController.dropOffPoints.length; a++) {
+                                                      //               mapLocationUpdateController.addMarker3("destination");
+                                                      //             }
+                                                      //
+                                                      //             // mapLocationUpdateController.addMarker2(LatLng(double.parse(pickLatLon["latitude"].toString()), double.parse(pickLatLon["longitude"].toString()),), 'destination');
+                                                      //
+                                                      //             mapLocationUpdateController.getDirections11(lat1: PointLatLng(double.parse(mapData["request_data"]["drop_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["drop_latlon"]["longitude"].toString())), dropOffPoints: mapLocationUpdateController.dropOffPoints,);
+                                                      //
+                                                      //             setState(() {
+                                                      //               rideStartController.isCircle = false;
+                                                      //             });
+                                                      //           });
+                                                      //         }else{
+                                                      //           snackBar(context: context, text: "Something Went Wrong");
+                                                      //           setState(() {
+                                                      //             rideStartController.isCircle = false;
+                                                      //           });
+                                                      //         }
+                                                      //       },);
+                                                      //     }
+                                                      // )
+                                                      : requestDetailController
+                                                                  .requestDetailModel!
+                                                                  .requestData
+                                                                  .status ==
+                                                              "5"
+                                                          ? rideCancelController
+                                                                  .isCircle
+                                                              ? const Center(
+                                                                  child: CircularProgressIndicator(
+                                                                      color: Colors
+                                                                          .pink),
+                                                                )
+                                                              : Center(
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        horizontal:
+                                                                            10),
+                                                                    child: ActionSlider
+                                                                        .standard(
+                                                                      sliderBehavior:
+                                                                          SliderBehavior
+                                                                              .stretch,
+                                                                      rolling:
+                                                                          false,
+                                                                      width: double
+                                                                          .infinity,
+                                                                      height:
+                                                                          60,
+                                                                      boxShadow: const [
+                                                                        BoxShadow(),
+                                                                      ],
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .red,
+                                                                      toggleColor:
+                                                                          Colors
+                                                                              .white,
+                                                                      loadingIcon:
+                                                                          const Center(
+                                                                              child: SizedBox(
+                                                                        height:
+                                                                            35,
+                                                                        width:
+                                                                            35,
+                                                                        child: CircularProgressIndicator(
+                                                                            color:
+                                                                                Colors.red),
+                                                                      )),
+                                                                      successIcon:
+                                                                          const Center(
+                                                                        child: SizedBox(
+                                                                            width: 35,
+                                                                            child: Center(
+                                                                                child: Icon(
+                                                                              Icons.check_rounded,
+                                                                              color: Colors.red,
+                                                                              size: 30,
+                                                                            ))),
+                                                                      ),
+                                                                      icon:
+                                                                          const Center(
+                                                                        child: SizedBox(
+                                                                            width: 35,
+                                                                            child: Center(
+                                                                                child: Icon(
+                                                                              Icons.directions_bike,
+                                                                              color: Colors.red,
+                                                                              size: 30,
+                                                                            ))),
+                                                                      ),
+                                                                      action:
+                                                                          (controller) async {
+                                                                        controller
+                                                                            .loading(); //starts loading animation
+                                                                        rideCancelController
+                                                                            .rideEndApi(
+                                                                                context: context,
+                                                                                requestId: widget.requestId.toString())
+                                                                            .then(
+                                                                          (value) {
+                                                                            Map<String, dynamic>
+                                                                                decodedValue =
+                                                                                json.decode(value);
+                                                                            if (decodedValue["Result"] ==
+                                                                                true) {
+                                                                              timer?.cancel();
+                                                                              socket.emit('Vehicle_Ride_Start_End', {
+                                                                                'uid': getData.read("UserLogin")["id"].toString(),
+                                                                                'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
+                                                                                'request_id': widget.requestId.toString(),
+                                                                              });
+                                                                              buttonStatus = 0;
+                                                                              requestDetailController.requestDetailApi(requestId: widget.requestId.toString()).then(
+                                                                                (value) {
+                                                                                  requestDetailController.requestDetailModel!.requestData.status == "7"
+                                                                                      ? Get.offAll(RideCompleteScreen(
+                                                                                          requestId: widget.requestId.toString(),
+                                                                                          cID: requestDetailController.requestDetailModel!.requestData.cId.toString(),
+                                                                                          status: requestDetailController.requestDetailModel!.requestData.status.toString(),
+                                                                                        ))
+                                                                                      : const SizedBox();
+                                                                                },
+                                                                              );
+                                                                              setState(() {
+                                                                                rideCancelController.isCircle = false;
+                                                                              });
+                                                                            } else {
+                                                                              snackBar(context: context, text: "Something Went Wrong");
+                                                                              setState(() {
+                                                                                rideCancelController.isCircle = false;
+                                                                              });
+                                                                            }
+                                                                          },
+                                                                        );
                                                                         await Future.delayed(const Duration(
                                                                             seconds:
-                                                                                1));
+                                                                                3));
                                                                         controller
                                                                             .success();
                                                                         await Future.delayed(const Duration(
@@ -1579,325 +1619,75 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                                 1));
                                                                         controller
                                                                             .reset();
-                                                                      }
-                                                                    },
-                                                                    child: Text(
-                                                                      'Swipe To Start Ride',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            14,
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        fontFamily:
-                                                                            FontFamily.sofiaProBold,
-                                                                        color:
-                                                                            whiteColor,
-                                                                        letterSpacing:
-                                                                            0.4,
+                                                                      },
+                                                                      child:
+                                                                          Text(
+                                                                        'Swipe To End Ride',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              14,
+                                                                          fontWeight:
+                                                                              FontWeight.w500,
+                                                                          fontFamily:
+                                                                              FontFamily.sofiaProBold,
+                                                                          color:
+                                                                              whiteColor,
+                                                                          letterSpacing:
+                                                                              0.4,
+                                                                        ),
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                ),
-                                                              )
-                                                        // button(text: "Start the ride", color: Colors.green.shade500,
-                                                        //     onPress: (){
-                                                        //       setState(() {
-                                                        //         rideStartController.isCircle = true;
-                                                        //       });
-                                                        //       mapLocationUpdateController.dropOffPoints = [];
-                                                        //       mapLocationUpdateController.markers11 = {};
-                                                        //       rideStartController.rideStartApi(context: context, requestId: widget.requestId.toString()).then((value) {
-                                                        //         Map<String, dynamic> decodedValue = json.decode(value);
-                                                        //         if(decodedValue["Result"] == true){
-                                                        //           socket.emit('Vehicle_Ride_Start_End',{
-                                                        //             'uid': getData.read("UserLogin")["id"].toString(),
-                                                        //             'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
-                                                        //             'request_id': widget.requestId.toString(),
-                                                        //           });
-                                                        //           remainingTime = 0;
-                                                        //           timer?.cancel();
-                                                        //           startTimerAdd();
-                                                        //           // requestDetailController.requestDetailApi(context: context, requestId: widget.requestId.toString());
-                                                        //           setState(() { });
-                                                        //           requestDetailController.requestDetailApi(requestId: widget.requestId).then((value) async{
-                                                        //             Map<String, dynamic> mapData = json.decode(value);
-                                                        //             print("++++++++++++++++ ${mapData}");
-                                                        //             // await mapLocationUpdateController.removeMarker('origin');
-                                                        //
-                                                        //             List<dynamic> dropOffPointsDynamic = mapData["request_data"]["drop_latlon"];
-                                                        //             print("------List------------- $dropOffPointsDynamic");
-                                                        //
-                                                        //             mapLocationUpdateController.dropOffPoints = dropOffPointsDynamic.map((item) {
-                                                        //               return PointLatLng(
-                                                        //                 double.parse(item["latitude"].toString()),
-                                                        //                 double.parse(item["longitude"].toString()),
-                                                        //               );
-                                                        //             }).toList();
-                                                        //
-                                                        //             print("++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}");
-                                                        //             print("++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}");
-                                                        //             mapLocationUpdateController.startLiveTracking();
-                                                        //             // mapLocationUpdateController.addMarkercurrent(LatLng(double.parse(mapData["request_data"]["pick_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["pick_latlon"]["longitude"].toString()),),"origin",BitmapDescriptor.defaultMarker);
-                                                        //
-                                                        //             for (int a = 0; a < mapLocationUpdateController.dropOffPoints.length; a++) {
-                                                        //               mapLocationUpdateController.addMarker3("destination");
-                                                        //             }
-                                                        //
-                                                        //             // mapLocationUpdateController.addMarker2(LatLng(double.parse(pickLatLon["latitude"].toString()), double.parse(pickLatLon["longitude"].toString()),), 'destination');
-                                                        //
-                                                        //             mapLocationUpdateController.getDirections11(lat1: PointLatLng(double.parse(mapData["request_data"]["drop_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["drop_latlon"]["longitude"].toString())), dropOffPoints: mapLocationUpdateController.dropOffPoints,);
-                                                        //
-                                                        //             setState(() {
-                                                        //               rideStartController.isCircle = false;
-                                                        //             });
-                                                        //           });
-                                                        //         }else{
-                                                        //           snackBar(context: context, text: "Something Went Wrong");
-                                                        //           setState(() {
-                                                        //             rideStartController.isCircle = false;
-                                                        //           });
-                                                        //         }
-                                                        //       },);
-                                                        //     }
-                                                        // )
-                                                        : requestDetailController
-                                                                    .requestDetailModel!
-                                                                    .requestData
-                                                                    .status ==
-                                                                "5"
-                                                            ? rideCancelController
-                                                                    .isCircle
-                                                                ? const Center(
-                                                                    child:
-                                                                        CircularProgressIndicator(
-                                                                      color: Colors
-                                                                          .pink,
-                                                                    ),
-                                                                  )
-                                                                : Center(
-                                                                    child:
-                                                                        Padding(
-                                                                      padding:
-                                                                          const EdgeInsets
-                                                                              .symmetric(
-                                                                        horizontal:
-                                                                            10,
-                                                                      ),
-                                                                      child: ActionSlider
-                                                                          .standard(
-                                                                        sliderBehavior:
-                                                                            SliderBehavior.stretch,
-                                                                        rolling:
-                                                                            false,
-                                                                        width: double
-                                                                            .infinity,
-                                                                        height:
-                                                                            60,
-                                                                        boxShadow: const [
-                                                                          BoxShadow(),
-                                                                        ],
-                                                                        backgroundColor:
-                                                                            Colors.red,
-                                                                        toggleColor:
-                                                                            Colors.white,
-                                                                        loadingIcon:
-                                                                            const Center(
-                                                                          child:
-                                                                              SizedBox(
-                                                                            height:
-                                                                                35,
-                                                                            width:
-                                                                                35,
-                                                                            child:
-                                                                                CircularProgressIndicator(
-                                                                              color: Colors.red,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        successIcon:
-                                                                            const Center(
-                                                                          child:
-                                                                              SizedBox(
-                                                                            width:
-                                                                                35,
-                                                                            child:
-                                                                                Center(
-                                                                              child: Icon(
-                                                                                Icons.check_rounded,
-                                                                                color: Colors.red,
-                                                                                size: 30,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        icon:
-                                                                            const Center(
-                                                                          child:
-                                                                              SizedBox(
-                                                                            width:
-                                                                                35,
-                                                                            child:
-                                                                                Center(
-                                                                              child: Icon(
-                                                                                Icons.directions_bike,
-                                                                                color: Colors.red,
-                                                                                size: 30,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        action:
-                                                                            (controller) async {
-                                                                          controller
-                                                                              .loading(); //starts loading animation
-                                                                          rideCancelController
-                                                                              .rideEndApi(
-                                                                            context:
-                                                                                context,
-                                                                            requestId:
-                                                                                widget.requestId.toString(),
-                                                                          )
-                                                                              .then((
-                                                                            value,
-                                                                          ) {
-                                                                            Map<String, dynamic>
-                                                                                decodedValue =
-                                                                                json.decode(
-                                                                              value,
-                                                                            );
-                                                                            if (decodedValue["Result"] ==
-                                                                                true) {
-                                                                              timer?.cancel();
-                                                                              socket.emit(
-                                                                                'Vehicle_Ride_Start_End',
-                                                                                {
-                                                                                  'uid': getData
-                                                                                      .read(
-                                                                                        "UserLogin",
-                                                                                      )["id"]
-                                                                                      .toString(),
-                                                                                  'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
-                                                                                  'request_id': widget.requestId.toString(),
-                                                                                },
-                                                                              );
-                                                                              buttonStatus = 0;
-                                                                              requestDetailController
-                                                                                  .requestDetailApi(
-                                                                                requestId: widget.requestId.toString(),
-                                                                              )
-                                                                                  .then((
-                                                                                value,
-                                                                              ) {
-                                                                                requestDetailController.requestDetailModel!.requestData.status == "7"
-                                                                                    ? Get.offAll(
-                                                                                        RideCompleteScreen(
-                                                                                          requestId: widget.requestId.toString(),
-                                                                                          cID: requestDetailController.requestDetailModel!.requestData.cId.toString(),
-                                                                                          status: requestDetailController.requestDetailModel!.requestData.status.toString(),
-                                                                                        ),
-                                                                                      )
-                                                                                    : const SizedBox();
-                                                                              });
-                                                                              setState(() {
-                                                                                rideCancelController.isCircle = false;
-                                                                              });
-                                                                            } else {
-                                                                              snackBar(
-                                                                                context: context,
-                                                                                text: "Something Went Wrong",
-                                                                              );
-                                                                              setState(() {
-                                                                                rideCancelController.isCircle = false;
-                                                                              });
-                                                                            }
-                                                                          });
-                                                                          await Future
-                                                                              .delayed(
-                                                                            const Duration(
-                                                                              seconds: 3,
-                                                                            ),
-                                                                          );
-                                                                          controller
-                                                                              .success();
-                                                                          await Future
-                                                                              .delayed(
-                                                                            const Duration(
-                                                                              seconds: 1,
-                                                                            ),
-                                                                          );
-                                                                          controller
-                                                                              .reset();
-                                                                        },
-                                                                        child:
-                                                                            Text(
-                                                                          'Swipe To End Ride',
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                14,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            fontFamily:
-                                                                                FontFamily.sofiaProBold,
-                                                                            color:
-                                                                                whiteColor,
-                                                                            letterSpacing:
-                                                                                0.4,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                            //     : button(text: "Finish the ride", color: Colors.red,
-                                                            //     onPress: (){
-                                                            //       setState(() {
-                                                            //         rideCancelController.isCircle = true;
-                                                            //       });
-                                                            //       rideCancelController.rideEndApi(context: context, requestId: widget.requestId.toString()).then((value) {
-                                                            //         Map<String, dynamic> decodedValue = json.decode(value);
-                                                            //         if(decodedValue["Result"] == true){
-                                                            //           timer?.cancel();
-                                                            //           socket.emit('Vehicle_Ride_Start_End',{
-                                                            //             'uid': getData.read("UserLogin")["id"].toString(),
-                                                            //             'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
-                                                            //             'request_id': widget.requestId.toString(),
-                                                            //           });
-                                                            //           buttonStatus = 0;
-                                                            //           requestDetailController.requestDetailApi(requestId: widget.requestId.toString()).then((value) {
-                                                            //             requestDetailController.requestDetailModel!.requestData.status == "7"
-                                                            //                 ? Get.offAll(RideCompleteScreen(requestId: widget.requestId.toString(),cID: requestDetailController.requestDetailModel!.requestData.cId.toString(),status: requestDetailController.requestDetailModel!.requestData.status.toString(),)) : const SizedBox();
-                                                            //           },);
-                                                            //           setState(() {
-                                                            //             rideCancelController.isCircle = false;
-                                                            //           });
-                                                            //         }else{
-                                                            //           snackBar(context: context, text: "Something Went Wrong");
-                                                            //           setState(() {
-                                                            //             rideCancelController.isCircle = false;
-                                                            //           });
-                                                            //         }
-                                                            //       },);
-                                                            //     }
-                                                            // )
-                                                            : const SizedBox(),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                                                )
+                                                          //     : button(text: "Finish the ride", color: Colors.red,
+                                                          //     onPress: (){
+                                                          //       setState(() {
+                                                          //         rideCancelController.isCircle = true;
+                                                          //       });
+                                                          //       rideCancelController.rideEndApi(context: context, requestId: widget.requestId.toString()).then((value) {
+                                                          //         Map<String, dynamic> decodedValue = json.decode(value);
+                                                          //         if(decodedValue["Result"] == true){
+                                                          //           timer?.cancel();
+                                                          //           socket.emit('Vehicle_Ride_Start_End',{
+                                                          //             'uid': getData.read("UserLogin")["id"].toString(),
+                                                          //             'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
+                                                          //             'request_id': widget.requestId.toString(),
+                                                          //           });
+                                                          //           buttonStatus = 0;
+                                                          //           requestDetailController.requestDetailApi(requestId: widget.requestId.toString()).then((value) {
+                                                          //             requestDetailController.requestDetailModel!.requestData.status == "7"
+                                                          //                 ? Get.offAll(RideCompleteScreen(requestId: widget.requestId.toString(),cID: requestDetailController.requestDetailModel!.requestData.cId.toString(),status: requestDetailController.requestDetailModel!.requestData.status.toString(),)) : const SizedBox();
+                                                          //           },);
+                                                          //           setState(() {
+                                                          //             rideCancelController.isCircle = false;
+                                                          //           });
+                                                          //         }else{
+                                                          //           snackBar(context: context, text: "Something Went Wrong");
+                                                          //           setState(() {
+                                                          //             rideCancelController.isCircle = false;
+                                                          //           });
+                                                          //         }
+                                                          //       },);
+                                                          //     }
+                                                          // )
+                                                          : const SizedBox(),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                )
-              : Center(child: CircularProgressIndicator(color: appColor));
-        },
-      ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              )
+            : Center(child: CircularProgressIndicator(color: appColor));
+      }),
     );
   }
 
@@ -1915,9 +1705,8 @@ class _MapRideScreenState extends State<MapRideScreen> {
               decoration: BoxDecoration(
                 color: notifier.background,
                 borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(15),
-                  topLeft: Radius.circular(15),
-                ),
+                    topRight: Radius.circular(15),
+                    topLeft: Radius.circular(15)),
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -1964,52 +1753,51 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                 });
                                 otpRideController
                                     .otpRideApi(
-                                  context: context,
-                                  requestId: widget.requestId.toString(),
-                                  otp: otpRideController.otpController.text,
-                                  time: "${timmer == 0 ? "0" : timmer}",
-                                )
-                                    .then((value) {
-                                  Map<String, dynamic> decodedValue =
-                                      json.decode(value);
-                                  if (decodedValue["Result"] == true) {
-                                    timer?.cancel();
-                                    homeStatus == 0
-                                        ? formatTime(remainingTime)
-                                        : formatTime2(remainingTime2);
-                                    print(
-                                      "++++++++remainingTime123+++++++++++ $remainingTime",
-                                    );
-                                    socket.emit('Vehicle_Ride_OTP', {
-                                      'uid': getData
-                                          .read("UserLogin")["id"]
-                                          .toString(),
-                                      'c_id': requestDetailController
-                                          .requestDetailModel!.requestData.cId
-                                          .toString(),
-                                      'request_id': widget.requestId.toString(),
-                                      'status': true,
-                                    });
-                                    print(
-                                      "++++++++timer+++++++++++ ${timer}",
-                                    );
-
-                                    print(
-                                      "++++++++countdownStart+++++++++++ ${countdownStart}",
-                                    );
-                                    requestDetailController.requestDetailApi(
-                                      requestId: widget.requestId.toString(),
-                                    );
-                                    Get.back();
-                                    setState(() {
-                                      setState(() {
-                                        otpRideController.isCircle = false;
+                                        context: context,
+                                        requestId: widget.requestId.toString(),
+                                        otp: otpRideController
+                                            .otpController.text,
+                                        time: "${timmer == 0 ? "0" : timmer}")
+                                    .then(
+                                  (value) {
+                                    Map<String, dynamic> decodedValue =
+                                        json.decode(value);
+                                    if (decodedValue["Result"] == true) {
+                                      timer?.cancel();
+                                      homeStatus == 0
+                                          ? formatTime(remainingTime)
+                                          : formatTime2(remainingTime2);
+                                      print(
+                                          "++++++++remainingTime123+++++++++++ $remainingTime");
+                                      socket.emit('Vehicle_Ride_OTP', {
+                                        'uid': getData
+                                            .read("UserLogin")["id"]
+                                            .toString(),
+                                        'c_id': requestDetailController
+                                            .requestDetailModel!.requestData.cId
+                                            .toString(),
+                                        'request_id':
+                                            widget.requestId.toString(),
+                                        'status': true,
                                       });
-                                    });
-                                  }
-                                });
-                              },
-                            ),
+                                      print(
+                                          "++++++++timer+++++++++++ ${timer}");
+
+                                      print(
+                                          "++++++++countdownStart+++++++++++ ${countdownStart}");
+                                      requestDetailController.requestDetailApi(
+                                          requestId:
+                                              widget.requestId.toString());
+                                      Get.back();
+                                      setState(() {
+                                        setState(() {
+                                          otpRideController.isCircle = false;
+                                        });
+                                      });
+                                    }
+                                  },
+                                );
+                              }),
                     ),
                   ],
                 ),
@@ -2033,8 +1821,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
       isScrollControlled: true,
       backgroundColor: notifier.background,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       context: context,
       builder: (BuildContext context) {
@@ -2043,37 +1830,32 @@ class _MapRideScreenState extends State<MapRideScreen> {
             return SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(height: Get.height * 0.02),
                     Container(
-                      height: 6,
-                      width: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
+                        height: 6,
+                        width: 80,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(25))),
                     SizedBox(height: Get.height * 0.02),
                     Text(
                       "Select Reason".tr,
                       style: TextStyle(
-                        fontSize: 20,
-                        fontFamily: 'Gilroy Bold',
-                        color: notifier.textColor,
-                      ),
+                          fontSize: 20,
+                          fontFamily: 'Gilroy Bold',
+                          color: notifier.textColor),
                     ),
                     SizedBox(height: Get.height * 0.02),
                     Text(
                       "Please select the reason for cancellation:".tr,
                       style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Gilroy Medium',
-                        color: notifier.textColor,
-                      ),
+                          fontSize: 16,
+                          fontFamily: 'Gilroy Medium',
+                          color: notifier.textColor),
                     ),
                     SizedBox(height: Get.height * 0.02),
                     ListView.builder(
@@ -2094,7 +1876,9 @@ class _MapRideScreenState extends State<MapRideScreen> {
                             height: 40,
                             child: Row(
                               children: [
-                                const SizedBox(width: 25),
+                                const SizedBox(
+                                  width: 25,
+                                ),
                                 Radio(
                                   activeColor: appColor,
                                   value: i,
@@ -2109,7 +1893,9 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                         .toString();
                                   },
                                 ),
-                                const SizedBox(width: 15),
+                                const SizedBox(
+                                  width: 15,
+                                ),
                                 Text(
                                   cancelRequestReasonController
                                       .cancelRequestReasonModel!
@@ -2134,32 +1920,24 @@ class _MapRideScreenState extends State<MapRideScreen> {
                             child: TextField(
                               controller: note,
                               decoration: InputDecoration(
-                                isDense: true,
-                                enabledBorder: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
+                                  isDense: true,
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFF246BFD), width: 1),
                                   ),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF246BFD),
-                                    width: 1,
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
+                                    borderSide: BorderSide(
+                                        color: Color(0xFF246BFD), width: 1),
                                   ),
-                                ),
-                                focusedBorder: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF246BFD),
-                                    width: 1,
-                                  ),
-                                ),
-                                hintText: 'Enter reason'.tr,
-                                hintStyle: TextStyle(
-                                  fontFamily: 'Gilroy Medium',
-                                  fontSize: Get.size.height / 55,
-                                  color: Colors.grey,
-                                ),
-                              ),
+                                  hintText: 'Enter reason'.tr,
+                                  hintStyle: TextStyle(
+                                      fontFamily: 'Gilroy Medium',
+                                      fontSize: Get.size.height / 55,
+                                      color: Colors.grey)),
                             ),
                           )
                         : const SizedBox(),
@@ -2189,13 +1967,12 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                 titleColor: Colors.white,
                                 ontap: () {
                                   cancelRequestController.cancelRequestApi(
-                                    context: context,
-                                    requestId: widget.requestId.toString(),
-                                    cID: requestDetailController
-                                        .requestDetailModel!.requestData.cId
-                                        .toString(),
-                                    cancelId: rejectMsg,
-                                  );
+                                      context: context,
+                                      requestId: widget.requestId.toString(),
+                                      cID: requestDetailController
+                                          .requestDetailModel!.requestData.cId
+                                          .toString(),
+                                      cancelId: rejectMsg);
                                   socket.emit('Vehicle_Accept_Cancel', {
                                     'uid': getData
                                         .read("UserLogin")["id"]
@@ -2223,13 +2000,12 @@ class _MapRideScreenState extends State<MapRideScreen> {
     );
   }
 
-  cancelButton({
-    Function()? ontap,
-    String? title,
-    Color? bgColor,
-    titleColor,
-    Gradient? gradient1,
-  }) {
+  cancelButton(
+      {Function()? ontap,
+      String? title,
+      Color? bgColor,
+      titleColor,
+      Gradient? gradient1}) {
     return InkWell(
       onTap: ontap,
       child: Container(
@@ -2241,29 +2017,25 @@ class _MapRideScreenState extends State<MapRideScreen> {
           borderRadius: (BorderRadius.circular(18)),
         ),
         child: Center(
-          child: Text(
-            title!,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: titleColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-              fontFamily: 'Gilroy Medium',
-            ),
-          ),
+          child: Text(title!,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  color: titleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                  fontFamily: 'Gilroy Medium')),
         ),
       ),
     );
   }
 
-  cancelButton1({
-    Function()? ontap,
-    String? title,
-    Color? bgColor,
-    titleColor,
-    Gradient? gradient1,
-  }) {
+  cancelButton1(
+      {Function()? ontap,
+      String? title,
+      Color? bgColor,
+      titleColor,
+      Gradient? gradient1}) {
     return InkWell(
       onTap: ontap,
       child: Container(
@@ -2275,17 +2047,14 @@ class _MapRideScreenState extends State<MapRideScreen> {
           borderRadius: (BorderRadius.circular(18)),
         ),
         child: Center(
-          child: Text(
-            title!,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: titleColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-              fontFamily: 'Gilroy Medium',
-            ),
-          ),
+          child: Text(title!,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  color: titleColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                  fontFamily: 'Gilroy Medium')),
         ),
       ),
     );
@@ -2305,9 +2074,8 @@ class _MapRideScreenState extends State<MapRideScreen> {
               padding: const EdgeInsets.all(13),
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(15),
-                  topLeft: Radius.circular(15),
-                ),
+                    topRight: Radius.circular(15),
+                    topLeft: Radius.circular(15)),
                 color: notifier.background,
               ),
               child: Stack(
@@ -2369,10 +2137,9 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                     RotatedBox(
                                       quarterTurns: 2,
                                       child: Icon(
-                                        CupertinoIcons.location_north_fill,
-                                        size: 20,
-                                        color: appColor,
-                                      ),
+                                          CupertinoIcons.location_north_fill,
+                                          size: 20,
+                                          color: appColor),
                                     ),
                                     const SizedBox(width: 6),
                                     Flexible(
@@ -2408,12 +2175,10 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: SvgPicture.asset(
-                                            "assets/image/loaction_circle.svg",
-                                          ),
-                                        ),
+                                            height: 20,
+                                            width: 20,
+                                            child: SvgPicture.asset(
+                                                "assets/image/loaction_circle.svg")),
                                         const SizedBox(width: 6),
                                         Flexible(
                                           child: Text(
@@ -2474,56 +2239,55 @@ class _MapRideScreenState extends State<MapRideScreen> {
                             const SizedBox(height: 10),
                         itemBuilder: (context, index) {
                           return button2(
-                            text: "${timeData[index]} min.",
-                            color: Colors.green.shade500,
-                            onPress: () {
-                              setState(() {
-                                isLoading = true;
-                                print('iOiOiOiOiO:__${isLoading}');
-                              });
-                              print(
-                                "+++++++++++++++++++++++ ${timeData[index]}",
-                              );
-                              // timeController.timeApi(context: context, requestId: requestID, cId: requestDetailController.requestDetailModel!.requestData.cId.toString(), time: timeData[index].toString(),).then((value) { Map<String, dynamic> decodedValue = json.decode(value);
-                              // if(decodedValue["Result"] == true){
-                              socket.emit('Vehicle_Time_update', {
-                                'uid':
-                                    getData.read("UserLogin")["id"].toString(),
-                                'request_id': requestID,
-                                'c_id': requestDetailController
-                                    .requestDetailModel!.requestData.cId
-                                    .toString(),
-                                'time': timeData[index].toString(),
-                              });
-                              isLoading = false;
-                              homeStatus = 0;
-                              print('ELELELELELELELELE:__${isLoading}');
-                              countdownStart = (int.parse(
-                                      timeData[index].toString()) *
-                                  60); // Initialize countdownStart with widget.time
-                              remainingTime = countdownStart;
-                              print("********///////-------- ${remainingTime}");
-                              startTimer();
-                              setState(() {});
-                              Get.close(1);
+                              text: "${timeData[index]} min.",
+                              color: Colors.green.shade500,
+                              onPress: () {
+                                setState(() {
+                                  isLoading = true;
+                                  print('iOiOiOiOiO:__${isLoading}');
+                                });
+                                print(
+                                    "+++++++++++++++++++++++ ${timeData[index]}");
+                                // timeController.timeApi(context: context, requestId: requestID, cId: requestDetailController.requestDetailModel!.requestData.cId.toString(), time: timeData[index].toString(),).then((value) { Map<String, dynamic> decodedValue = json.decode(value);
+                                // if(decodedValue["Result"] == true){
+                                socket.emit('Vehicle_Time_update', {
+                                  'uid': getData
+                                      .read("UserLogin")["id"]
+                                      .toString(),
+                                  'request_id': requestID,
+                                  'c_id': requestDetailController
+                                      .requestDetailModel!.requestData.cId
+                                      .toString(),
+                                  'time': timeData[index].toString()
+                                });
+                                isLoading = false;
+                                homeStatus = 0;
+                                print('ELELELELELELELELE:__${isLoading}');
+                                countdownStart = (int.parse(
+                                        timeData[index].toString()) *
+                                    60); // Initialize countdownStart with widget.time
+                                remainingTime = countdownStart;
+                                print(
+                                    "********///////-------- ${remainingTime}");
+                                startTimer();
+                                setState(() {});
+                                Get.close(1);
 
-                              // }else{
-                              //   snackBar(context: context, text: "Something went Wrong");
-                              // }
-                              // },
-                              // );
-                            },
-                          );
+                                // }else{
+                                //   snackBar(context: context, text: "Something went Wrong");
+                                // }
+                                // },
+                                // );
+                              });
                         },
                       ),
                       const SizedBox(height: 25),
                       button(
-                        text: "Default Time",
-                        color: appColor,
-                        onPress: () {
-                          Get.back();
-                        },
-                      ),
+                          text: "Default Time",
+                          color: appColor,
+                          onPress: () {
+                            Get.back();
+                          }),
                     ],
                   ),
                   isLoading == true
@@ -2535,13 +2299,12 @@ class _MapRideScreenState extends State<MapRideScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               SizedBox(
-                                height: 50,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    color: appColor,
-                                  ),
-                                ),
-                              ),
+                                  height: 50,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: appColor,
+                                    ),
+                                  )),
                             ],
                           ),
                         )
@@ -2570,9 +2333,8 @@ class _MapRideScreenState extends State<MapRideScreen> {
               padding: const EdgeInsets.all(13),
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(15),
-                  topLeft: Radius.circular(15),
-                ),
+                    topRight: Radius.circular(15),
+                    topLeft: Radius.circular(15)),
                 color: notifier.background,
               ),
               child: Column(
@@ -2598,41 +2360,38 @@ class _MapRideScreenState extends State<MapRideScreen> {
                           const SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         return button3(
-                          textColor: selectNotification == index
-                              ? whiteColor
-                              : notifier.textColor,
-                          borderColor: selectNotification == index
-                              ? appColor
-                              : notifier.borderColor,
-                          text: requestDetailController
-                              .requestDetailModel!.demList[index].title,
-                          color: selectNotification == index
-                              ? appColor
-                              : notifier.containerColor,
-                          onPress: () {
-                            setState(() {
-                              selectNotification = index;
-                              notificationController.notificationId =
-                                  requestDetailController
-                                      .requestDetailModel!.demList[index].id
-                                      .toString();
+                            textColor: selectNotification == index
+                                ? whiteColor
+                                : notifier.textColor,
+                            borderColor: selectNotification == index
+                                ? appColor
+                                : notifier.borderColor,
+                            text: requestDetailController
+                                .requestDetailModel!.demList[index].title,
+                            color: selectNotification == index
+                                ? appColor
+                                : notifier.containerColor,
+                            onPress: () {
+                              setState(() {
+                                selectNotification = index;
+                                notificationController.notificationId =
+                                    requestDetailController
+                                        .requestDetailModel!.demList[index].id
+                                        .toString();
+                              });
                             });
-                          },
-                        );
                       },
                     ),
                   ),
                   const SizedBox(height: 10),
                   button(
-                    text: "SEND".tr,
-                    color: appColor,
-                    onPress: () {
-                      notificationController.notification(
-                        context: context,
-                        requestId: widget.requestId.toString(),
-                      );
-                    },
-                  ),
+                      text: "SEND".tr,
+                      color: appColor,
+                      onPress: () {
+                        notificationController.notification(
+                            context: context,
+                            requestId: widget.requestId.toString());
+                      }),
                 ],
               ),
             ),
