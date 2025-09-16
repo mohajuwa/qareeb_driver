@@ -212,7 +212,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                                 flagsButtonPadding: EdgeInsets.zero,
                                 showCountryFlag: false,
                                 showDropdownIcon: false,
-                                initialCountryCode: 'IN',
+                                initialCountryCode: 'YE',
                                 autovalidateMode: AutovalidateMode.disabled,
                                 dropdownTextStyle: TextStyle(
                                   fontFamily: FontFamily.sofiaProRegular,

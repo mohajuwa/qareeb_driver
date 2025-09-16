@@ -40,7 +40,6 @@ class _FinalVerificationScreenState extends State<FinalVerificationScreen> {
         backgroundColor: whiteColor,
         leading: GestureDetector(
           onTap: () {
-            // SystemNavigator.pop();
             verificationCheckController
                 .verificationCheckApi(context: context)
                 .then((value) {
@@ -51,105 +50,104 @@ class _FinalVerificationScreenState extends State<FinalVerificationScreen> {
           child: Icon(Icons.close, size: 25, color: blackColor),
         ),
       ),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.all(10),
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: button(
-          text: "CONTINUE".tr,
-          color: appColor,
-          onPress: () {
-            documentStatusController.documentStatusApi(context: context).then((
-              value,
-            ) {
-              Map<String, dynamic> decodedValue = json.decode(value);
-              print("+++++++++++++++ $decodedValue");
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          child: button(
+            text: "CONTINUE".tr,
+            color: appColor,
+            onPress: () {
+              documentStatusController
+                  .documentStatusApi(context: context)
+                  .then((
+                value,
+              ) {
+                Map<String, dynamic> decodedValue = json.decode(value);
+                print("+++++++++++++++ $decodedValue");
 
-              if (decodedValue["Result"] == true) {
-                if (decodedValue["account_status"] == "1" &&
-                    decodedValue["document_status"] == "1") {
-                  // initPlatformState();
-                  Get.offAll(const BottomBarScreen());
-                } else if (decodedValue["document_status"] == "4") {
-                  Get.offAll(const VerificationProcessScreen());
-                } else if (decodedValue["document_status"] == "5") {
-                  snackBar(
-                    context: context,
-                    text: "Document Verification is Pending",
-                  );
-                } else if (decodedValue["account_status"] == "0") {
-                  snackBar(context: context, text: "Account is unapproved");
+                if (decodedValue["Result"] == true) {
+                  if (decodedValue["account_status"] == "1" &&
+                      decodedValue["document_status"] == "1") {
+                    Get.offAll(const BottomBarScreen());
+                  } else if (decodedValue["document_status"] == "4") {
+                    Get.offAll(const VerificationProcessScreen());
+                  } else if (decodedValue["document_status"] == "5") {
+                    snackBar(
+                      context: context,
+                      text: "Document Verification is Pending",
+                    );
+                  } else if (decodedValue["account_status"] == "0") {
+                    snackBar(context: context, text: "Account is unapproved");
+                  }
                 }
-              }
-            });
-          },
+              });
+            },
+          ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(13),
+      body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Get Approved to Drive with Ease".tr,
-                style: TextStyle(
-                  color: blackColor,
-                  fontSize: 22,
-                  fontFamily: FontFamily.sofiaProBold,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Get Approved to Drive with Ease".tr,
+                  style: TextStyle(
+                    color: blackColor,
+                    fontSize: 22,
+                    fontFamily: FontFamily.sofiaProBold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Once all your details—mobile number, personal info, vehicle, and bank information—are submitted correctly, we’ll review them and get your account activated in no time!"
-                    .tr,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16,
-                  fontFamily: FontFamily.sofiaProRegular,
+                const SizedBox(height: 10),
+                Text(
+                  "Once all your details—mobile number, personal info, vehicle, and bank information—are submitted correctly, we'll review them and get your account activated in no time!"
+                      .tr,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                    fontFamily: FontFamily.sofiaProRegular,
+                  ),
                 ),
-                maxLines: 5,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 25),
-              containerData(
-                image: "assets/image/personalinfo.json",
-                title: "Personal Information".tr,
-                subtitle:
-                    "Provide your mobile number and basic personal details for identity verification."
-                        .tr,
-              ),
-              const SizedBox(height: 10),
-              containerData(
-                image: "assets/image/vehicle.json",
-                title: "Vehicle Information".tr,
-                subtitle:
-                    "Submit details like your vehicle’s make, model, year, and registration."
-                        .tr,
-              ),
-              const SizedBox(height: 10),
-              containerData(
-                image: "assets/image/bank.json",
-                title: "Documents".tr,
-                subtitle:
-                    "Enter your bank info for payments and upload required documents such as your driver’s license and insurance."
-                        .tr,
-              ),
-              const SizedBox(height: 25),
-              Text(
-                "Once all information is correctly submitted, we’ll review it and activate your account quickly!"
-                    .tr,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16,
-                  fontFamily: FontFamily.sofiaProRegular,
+                const SizedBox(height: 25),
+                containerData(
+                  image: "assets/image/personalinfo.json",
+                  title: "Personal Information".tr,
+                  subtitle:
+                      "Provide your mobile number and basic personal details for identity verification."
+                          .tr,
                 ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+                const SizedBox(height: 10),
+                containerData(
+                  image: "assets/image/vehicle.json",
+                  title: "Vehicle Information".tr,
+                  subtitle:
+                      "Submit details like your vehicle's make, model, year, and registration."
+                          .tr,
+                ),
+                const SizedBox(height: 10),
+                containerData(
+                  image: "assets/image/bank.json",
+                  title: "Documents".tr,
+                  subtitle:
+                      "Enter your bank info for payments and upload required documents such as your driver's license and insurance."
+                          .tr,
+                ),
+                const SizedBox(height: 25),
+                Text(
+                  "Once all information is correctly submitted, we'll review it and activate your account quickly!"
+                      .tr,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                    fontFamily: FontFamily.sofiaProRegular,
+                  ),
+                ),
+                const SizedBox(height: 20), // Extra bottom padding
+              ],
+            ),
           ),
         ),
       ),
@@ -165,7 +163,10 @@ class _FinalVerificationScreenState extends State<FinalVerificationScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(child: Lottie.asset(image, height: 100)),
+        SizedBox(
+          height: 100,
+          child: Lottie.asset(image, height: 100),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Text(
@@ -188,8 +189,6 @@ class _FinalVerificationScreenState extends State<FinalVerificationScreen> {
               fontSize: 15,
               fontFamily: FontFamily.sofiaProRegular,
             ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
           ),
         ),

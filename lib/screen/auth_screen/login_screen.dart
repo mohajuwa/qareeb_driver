@@ -42,10 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _currentPage = page);
   }
 
-  List<Widget> _buildSlides() {
-    return _slides.map(_buildSlide).toList();
-  }
-
   int _currentPage = 0;
 
   List<Slide> _slides = [];
@@ -77,12 +73,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPageIndicator() {
-    Row row = const Row(mainAxisAlignment: MainAxisAlignment.center, children: []);
-    for (int i = 0; i < _slides.length; i++) {
-      row.children.add(_buildPageIndicatorItem(i));
-      if (i != _slides.length - 1) row.children.add(const SizedBox(width: 10));
-    }
-    return row;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (int i = 0; i < _slides.length; i++) ...[
+          _buildPageIndicatorItem(i),
+          if (i != _slides.length - 1) const SizedBox(width: 10),
+        ],
+      ],
+    );
   }
 
   Widget _buildPageIndicatorItem(int index) {
@@ -100,21 +99,23 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: appColor,
-      resizeToAvoidBottomInset: false,
-      bottomNavigationBar: Padding(
+      resizeToAvoidBottomInset: true, // Changed to true
+      bottomNavigationBar: Container(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 20,
+          right: 20,
+          top: 10,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 10,
         ),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          // height: 250,
-          decoration: BoxDecoration(
-            color: whiteColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-            ),
+        decoration: BoxDecoration(
+          color: whiteColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
           ),
+        ),
+        child: SingleChildScrollView(
+          // Added scrolling capability
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 flagsButtonPadding: EdgeInsets.zero,
                 showCountryFlag: false,
                 showDropdownIcon: false,
-                initialCountryCode: 'IN',
+                initialCountryCode: 'YE',
                 dropdownTextStyle: TextStyle(
                   fontFamily: FontFamily.sofiaProRegular,
                   fontSize: 14,
@@ -194,8 +195,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 onChanged: (number) {
                   setState(() {
                     loginController.ccode = number.countryCode;
-
-                    // passwordController.text.isEmpty ? passwordvalidate = true : false;
                   });
                 },
               ),
@@ -288,55 +287,53 @@ class _LoginScreenState extends State<LoginScreen> {
                           setState(() {
                             loginController.checkTermsAndCondition(newBool);
                           });
-                          // save('Remember', true);
                         },
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "By Singing up I agree to ".tr,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: greyText,
-                                fontFamily: FontFamily.sofiaProRegular,
-                                overflow: TextOverflow.ellipsis,
+                    Expanded(
+                      // Added Expanded to prevent overflow
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Wrap(
+                            // Changed from Row to Wrap for better text handling
+                            children: [
+                              Text(
+                                "By Singing up I agree to ".tr,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: greyText,
+                                  fontFamily: FontFamily.sofiaProRegular,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Terms Of Use ".tr,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: appColor,
-                                fontFamily: FontFamily.sofiaProBold,
-                                overflow: TextOverflow.ellipsis,
+                              Text(
+                                "Terms Of Use ".tr,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: appColor,
+                                  fontFamily: FontFamily.sofiaProBold,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "and".tr,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: greyText,
-                                fontFamily: FontFamily.sofiaProRegular,
-                                overflow: TextOverflow.ellipsis,
+                              Text(
+                                "and ".tr,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: greyText,
+                                  fontFamily: FontFamily.sofiaProRegular,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 1),
-                        Text(
-                          "Privacy Policy".tr,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: appColor,
-                            fontFamily: FontFamily.sofiaProBold,
-                            overflow: TextOverflow.ellipsis,
+                              Text(
+                                "Privacy Policy".tr,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: appColor,
+                                  fontFamily: FontFamily.sofiaProBold,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -542,64 +539,96 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 15),
-        child: Stack(
-          children: [
-            PageView(
-              controller: _pageController,
-              onPageChanged: _handlingOnPageChanged,
-              physics: const BouncingScrollPhysics(),
-              children: _buildSlides(),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            // Added scrolling for the body
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: constraints.maxHeight,
+                      child: Stack(
+                        children: [
+                          PageView(
+                            controller: _pageController,
+                            onPageChanged: _handlingOnPageChanged,
+                            physics: const BouncingScrollPhysics(),
+                            children: _buildSlides(constraints),
+                          ),
+                          Positioned(
+                            bottom: 15,
+                            left: 0,
+                            right: 0,
+                            child: _buildPageIndicator(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            Positioned(
-              bottom: 15,
-              left: 0,
-              right: 0,
-              child: _buildPageIndicator(),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildSlide(Slide slide) {
+  List<Widget> _buildSlides(BoxConstraints constraints) {
+    return _slides.map((slide) => _buildSlide(slide, constraints)).toList();
+  }
+
+  Widget _buildSlide(Slide slide, BoxConstraints constraints) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: appColor,
-      body: Column(
-        children: <Widget>[
-          Container(
-            height: Get.height * 0.40,
-            width: Get.width,
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(top: Get.size.height * 0.1),
-            padding: const EdgeInsets.all(10),
-            child: Lottie.asset(slide.image),
+      body: SingleChildScrollView(
+        // Added scrolling capability to slide content
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: constraints.maxHeight,
           ),
-          Text(
-            slide.heading,
-            style: TextStyle(
-              color: whiteColor,
-              fontSize: 21,
-              fontFamily: FontFamily.sofiaProBold,
-            ),
-          ),
-          const SizedBox(height: 5),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text(
-              slide.subtext,
-              style: TextStyle(
-                color: whiteColor,
-                fontSize: 18,
-                fontFamily: FontFamily.sofiaProBold,
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: constraints.maxHeight *
+                    0.40, // Use constraint height instead of Get.height
+                width: constraints.maxWidth,
+                alignment: Alignment.center,
+                margin: EdgeInsets.only(top: constraints.maxHeight * 0.1),
+                padding: const EdgeInsets.all(10),
+                child: Lottie.asset(slide.image),
               ),
-              textAlign: TextAlign.center,
-            ),
+              Text(
+                slide.heading,
+                style: TextStyle(
+                  color: whiteColor,
+                  fontSize: 21,
+                  fontFamily: FontFamily.sofiaProBold,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(
+                  slide.subtext,
+                  style: TextStyle(
+                    color: whiteColor,
+                    fontSize: 18,
+                    fontFamily: FontFamily.sofiaProBold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
