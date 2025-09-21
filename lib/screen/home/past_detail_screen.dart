@@ -284,12 +284,12 @@ class _PastDetailScreenState extends State<PastDetailScreen> {
                                     data(
                                       title: "Trip Distance:".tr,
                                       value:
-                                          "${rideHistoryDetailController.rideHistoryDetailModel!.historyData.totKm} Km",
+                                          "${rideHistoryDetailController.rideHistoryDetailModel!.historyData.totKm} ${"km".tr}",
                                     ),
                                     data(
                                       title: "Trip Duration:".tr,
                                       value:
-                                          "${rideHistoryDetailController.rideHistoryDetailModel!.historyData.totMinute} Hrs",
+                                          "${rideHistoryDetailController.rideHistoryDetailModel!.historyData.totMinute} ${"Hrs".tr}",
                                     ),
                                     data(
                                       title: "Vehicle Type:".tr,

@@ -448,7 +448,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                             width: 4,
                                                           ),
                                                           Text(
-                                                            "${rideHistoryController.rideHistoryModel!.rideData[index].detail[index1].totMinute} Hrs",
+                                                            "${rideHistoryController.rideHistoryModel!.rideData[index].detail[index1].totMinute} ${"Hrs".tr}",
                                                             style: TextStyle(
                                                               color: greyText2,
                                                               fontSize: 13.5,

@@ -225,7 +225,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
                                                         .status ==
                                                     "1"
                                                 ? Text(
-                                                    "Completed",
+                                                    "Completed".tr,
                                                     maxLines: 1,
                                                     style: TextStyle(
                                                       color: Colors.green,
@@ -236,7 +236,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
                                                     ),
                                                   )
                                                 : Text(
-                                                    "Pending",
+                                                    "Pending".tr,
                                                     maxLines: 1,
                                                     style: TextStyle(
                                                       color: Colors

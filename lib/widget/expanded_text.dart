@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:qareeb/utils/colors.dart';
 
 class ExpandableText extends StatefulWidget {
@@ -47,7 +48,7 @@ class _ExpandableTextState extends State<ExpandableText> {
             child: Padding(
               padding: const EdgeInsets.only(top: 4.0), // Add some space
               child: Text(
-                _isExpanded ? 'Show less' : 'Show more',
+                _isExpanded ? 'Show less'.tr : 'Show more'.tr,
                 style: TextStyle(
                   color: appColor, // Use your app's theme color
                   fontWeight: FontWeight.bold,

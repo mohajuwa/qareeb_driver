@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:qareeb/screen/auth_screen/login_screen.dart';
 import 'package:qareeb/utils/colors.dart';
@@ -101,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen> {
             // 2. Give the SVG a specific height to prevent it from expanding infinitely.
             SvgPicture.asset(
               "assets/image/app_logo.svg",
-              height: 150, // TODO: Adjust this value to your liking
+              height: 150,
             ),
             const SizedBox(height: 10),
             Text(
@@ -114,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 5),
             Text(
-              "Be the Captain of Every Journey",
+              "Be the Captain of Every Journey".tr,
               style: TextStyle(
                 color: appColor,
                 fontSize: 13.5,

@@ -123,7 +123,7 @@ class PersonalInfoController extends GetxController implements GetxService {
       update();
     } else {
       print(response.reasonPhrase);
-      snackBar(context: context, text: "SomeThing Went Wrong");
+      snackBar(context: context, text: "SomeThing Went Wrong".tr);
     }
   }
 
@@ -151,7 +151,7 @@ class PersonalInfoController extends GetxController implements GetxService {
                   Image.asset("assets/image/uplodeimage.png"),
                   const SizedBox(height: 20),
                   Text(
-                    "Registered Successfully",
+                    "Registered Successfully".tr,
                     style: TextStyle(
                       color: blackColor,
                       fontSize: 20,
@@ -160,7 +160,8 @@ class PersonalInfoController extends GetxController implements GetxService {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    "Congratulation! your account already has been created. Please login to get amazing experience.",
+                    "Congratulation! your account already has been created. Please login to get amazing experience."
+                        .tr,
                     style: TextStyle(
                       color: greyText,
                       fontSize: 15,

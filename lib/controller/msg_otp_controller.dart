@@ -44,7 +44,8 @@ class MsgOtpController extends GetxController implements GetxService {
       snackBar(
         context: context,
         text:
-            "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added.",
+            "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added."
+                .tr,
       );
     }
   }

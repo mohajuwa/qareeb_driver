@@ -81,12 +81,12 @@ class AddCashController extends GetxController implements GetxService {
       isLoading = false;
       Get.back();
       totalCashController.totalCashApi(context: context);
-      snackBar(context: context, text: "Payout Done Successfully");
+      snackBar(context: context, text: "Payout Done Successfully".tr);
       update();
     } else {
       isLoading = false;
       Get.back();
-      snackBar(context: context, text: "Internal Server error");
+      snackBar(context: context, text: "Internal Server error".tr);
       print(response.reasonPhrase);
       update();
     }

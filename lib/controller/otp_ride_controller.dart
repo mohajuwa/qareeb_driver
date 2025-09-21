@@ -11,7 +11,6 @@ import '../screen/auth_screen/splash_screen.dart';
 import '../widget/common.dart';
 
 class OtpRideController extends GetxController implements GetxService {
-
   OtpRideModel? otpRideModel;
 
   bool isLoad = false;
@@ -20,11 +19,14 @@ class OtpRideController extends GetxController implements GetxService {
   TextEditingController otpController = TextEditingController();
   // bool isLoading = false;
 
-  Future otpRideApi({required context,required String requestId, required String otp,required String time}) async{
-
-    if(isLoad){
+  Future otpRideApi(
+      {required context,
+      required String requestId,
+      required String otp,
+      required String time}) async {
+    if (isLoad) {
       return;
-    }else{
+    } else {
       isLoad = true;
     }
 
@@ -37,9 +39,13 @@ class OtpRideController extends GetxController implements GetxService {
       "time": time
     };
 
-    Map<String, String> userHeader = {"Content-type": "application/json", "Accept": "application/json"};
+    Map<String, String> userHeader = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
 
-    var response = await http.post(Uri.parse(Config.baseUrl + Config.otpRide),body: jsonEncode(body),headers: userHeader);
+    var response = await http.post(Uri.parse(Config.baseUrl + Config.otpRide),
+        body: jsonEncode(body), headers: userHeader);
 
     print("++++++otpRideApi+++++++++++ ${body}");
     print("++++++otpRideApi+++++++++++ ${response.body}");
@@ -55,7 +61,6 @@ class OtpRideController extends GetxController implements GetxService {
           // isCircle = false;
           update();
           return response.body;
-
         } else {
           flutterToast(text: otpRideModel!.message.toString());
         }
@@ -63,8 +68,10 @@ class OtpRideController extends GetxController implements GetxService {
         flutterToast(text: "${data["message"]}");
       }
     } else {
-      flutterToast(text: "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added.");
+      flutterToast(
+          text:
+              "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added."
+                  .tr);
     }
-
   }
 }

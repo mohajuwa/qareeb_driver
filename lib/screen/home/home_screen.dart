@@ -486,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       btnCancel: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 25),
                         child: button(
-                          text: "Cancel",
+                          text: "Cancel".tr,
                           color: Colors.red,
                           onPress: () {
                             Get.back();

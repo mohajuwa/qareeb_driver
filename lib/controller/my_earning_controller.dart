@@ -13,37 +13,42 @@ class MyEarningController extends GetxController implements GetxService {
   MyEarningModel? myEarningModel;
   bool isLoading = false;
 
-  myEarningApi({required context,required String selection}) async{
+  myEarningApi({required context, required String selection}) async {
     Map body = {
       "uid": getData.read("UserLogin")["id"].toString(),
       "time": selection
     };
 
-    Map<String, String> userHeader = {"Content-type": "application/json", "Accept": "application/json"};
+    Map<String, String> userHeader = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
 
-    var response = await http.post(Uri.parse(Config.baseUrl + Config.myEarning),body: jsonEncode(body),headers: userHeader);
+    var response = await http.post(Uri.parse(Config.baseUrl + Config.myEarning),
+        body: jsonEncode(body), headers: userHeader);
 
     print("${response.body}");
     print("${body}");
 
     var data = jsonDecode(response.body);
-    if(response.statusCode == 200){
-      if(data["Result"] == true){
+    if (response.statusCode == 200) {
+      if (data["Result"] == true) {
         myEarningModel = myEarningModelFromJson(response.body);
-        if(myEarningModel!.result == true){
+        if (myEarningModel!.result == true) {
           isLoading = true;
           update();
-
-        }else{
+        } else {
           snackBar(context: context, text: myEarningModel!.message.toString());
         }
-      }else{
+      } else {
         snackBar(context: context, text: "${data["message"]}");
       }
-    }else{
-      snackBar(context: context, text: "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added.");
+    } else {
+      snackBar(
+          context: context,
+          text:
+              "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added."
+                  .tr);
     }
-
   }
-
 }

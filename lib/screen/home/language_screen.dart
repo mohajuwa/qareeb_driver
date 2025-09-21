@@ -20,18 +20,8 @@ class _LanguageScreenState extends State<LanguageScreen> {
   int? _value = 0;
 
   final List locale = [
-    {'name': 'ENGLISH', 'locale': const Locale('en', 'US')},
     {'name': 'عربى', 'locale': const Locale('ar', 'AR')},
-    {'name': 'हिंदी', 'locale': const Locale('hi', 'IN')},
-    {'name': 'Gujarati', 'locale': const Locale('gu', 'GUJARATI')},
-    {'name': 'Spanish', 'locale': const Locale('es', 'ES')},
-    {'name': 'French', 'locale': const Locale('fr', 'ES')},
-    {'name': 'Germany', 'locale': const Locale('de', 'ES')},
-    {'name': 'Indonesia', 'locale': const Locale('in', 'ES')},
-    // **********************************************************
-    {'name': 'South Africa', 'locale': const Locale('ZA', 'ES')},
-    {'name': 'Turkish', 'locale': const Locale('tr', 'ES')},
-    {'name': 'Portuguese', 'locale': const Locale('pt', 'ES')},
+    {'name': 'ENGLISH', 'locale': const Locale('en', 'US')},
   ];
   updateLanguage(Locale locale) {
     Get.back();

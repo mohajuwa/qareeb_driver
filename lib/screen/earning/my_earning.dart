@@ -210,7 +210,7 @@ class _MyEarningState extends State<MyEarning> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        "${myEarningController.myEarningModel!.earnings.todayMinute} Hrs",
+                                        "${myEarningController.myEarningModel!.earnings.totMinute} ${"Hrs".tr}",
                                         style: TextStyle(
                                           color: Colors.green.shade900,
                                           fontSize: 18,
@@ -431,7 +431,7 @@ class _MyEarningState extends State<MyEarning> {
                                               ),
                                               const SizedBox(height: 8),
                                               Text(
-                                                "${myEarningController.myEarningModel!.earnings.totMinute} Hrs",
+                                                "${myEarningController.myEarningModel!.earnings.totMinute} ${"Hrs".tr}",
                                                 style: TextStyle(
                                                   color: Colors.green.shade900,
                                                   fontSize: 18,
@@ -642,7 +642,7 @@ class _MyEarningState extends State<MyEarning> {
                                                                               ),
                                                                             ),
                                                                             Text(
-                                                                              "${myEarningController.myEarningModel!.rideData[index].totMinute} Hrs ",
+                                                                              "${myEarningController.myEarningModel!.rideData[index].totMinute} ${"Hrs".tr} ",
                                                                               style: TextStyle(
                                                                                 color: notifier.textColor,
                                                                                 fontSize: 13,

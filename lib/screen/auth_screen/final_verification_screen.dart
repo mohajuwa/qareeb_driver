@@ -74,7 +74,7 @@ class _FinalVerificationScreenState extends State<FinalVerificationScreen> {
                   } else if (decodedValue["document_status"] == "5") {
                     snackBar(
                       context: context,
-                      text: "Document Verification is Pending",
+                      text: "Document Verification is Pending".tr,
                     );
                   } else if (decodedValue["account_status"] == "0") {
                     snackBar(context: context, text: "Account is unapproved");

@@ -9,7 +9,8 @@ import '../config/data_store.dart';
 import '../model/verification_check_model.dart';
 import '../widget/common.dart';
 
-class VerificationCheckController extends GetxController implements GetxService {
+class VerificationCheckController extends GetxController
+    implements GetxService {
   VerificationCheckModel? verificationCheckModel;
 
   bool isLoading = false;
@@ -17,9 +18,15 @@ class VerificationCheckController extends GetxController implements GetxService 
   Future verificationCheckApi({required context}) async {
     Map body = {"uid": getData.read("UserLogin")["id"].toString()};
 
-    Map<String, String> userHeader = {"Content-type": "application/json", "Accept": "application/json"};
+    Map<String, String> userHeader = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
 
-    var response = await http.post(Uri.parse(Config.baseUrl + Config.checkDriverLocation), body: jsonEncode(body), headers: userHeader);
+    var response = await http.post(
+        Uri.parse(Config.baseUrl + Config.checkDriverLocation),
+        body: jsonEncode(body),
+        headers: userHeader);
 
     print("msgApi body ${body}");
     print("msgapi repsone ${response.body}");
@@ -34,13 +41,19 @@ class VerificationCheckController extends GetxController implements GetxService 
           update();
           return response.body;
         } else {
-          snackBar(context: context, text: verificationCheckModel!.message.toString());
+          snackBar(
+              context: context,
+              text: verificationCheckModel!.message.toString());
         }
       } else {
         snackBar(context: context, text: "${data["message"]}");
       }
     } else {
-      snackBar(context: context, text: "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added.");
+      snackBar(
+          context: context,
+          text:
+              "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added."
+                  .tr);
     }
   }
 }

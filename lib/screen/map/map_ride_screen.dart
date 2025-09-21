@@ -675,7 +675,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
                             requestDetailController.requestDetailModel!
                                         .requestData.status ==
                                     "2"
-                                ? "Enter OTP"
+                                ? "Enter OTP".tr
                                 : requestDetailController.requestDetailModel!
                                                 .requestData.status ==
                                             "3" ||
@@ -684,14 +684,14 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                 .requestData
                                                 .status ==
                                             "6"
-                                    ? "Start the ride"
+                                    ? "Start the ride".tr
                                     : requestDetailController
                                                 .requestDetailModel!
                                                 .requestData
                                                 .status ==
                                             "5"
-                                        ? "End the ride"
-                                        : "Drive to pickup",
+                                        ? "End the ride".tr
+                                        : "Drive to pickup".tr,
                             style: TextStyle(
                               color: notifier.textColor,
                               fontSize: 16,
@@ -1207,7 +1207,8 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                   context:
                                                                       context,
                                                                   text:
-                                                                      "Something Went Wrong");
+                                                                      "Something Went Wrong"
+                                                                          .tr);
                                                             }
                                                           },
                                                         );
@@ -1391,7 +1392,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                         } else {
                                                                           snackBar(
                                                                               context: context,
-                                                                              text: "Something Went Wrong");
+                                                                              text: "Something Went Wrong".tr);
                                                                           setState(
                                                                               () {
                                                                             rideStartController.isCircle =
@@ -1412,7 +1413,8 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                         .reset();
                                                                   },
                                                                   child: Text(
-                                                                    'Swipe To Start Ride',
+                                                                    'Swipe To End Ride'
+                                                                        .tr,
                                                                     style:
                                                                         TextStyle(
                                                                       fontSize:
@@ -1432,67 +1434,6 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                 ),
                                                               ),
                                                             )
-                                                      // button(text: "Start the ride", color: Colors.green.shade500,
-                                                      //     onPress: (){
-                                                      //       setState(() {
-                                                      //         rideStartController.isCircle = true;
-                                                      //       });
-                                                      //       mapLocationUpdateController.dropOffPoints = [];
-                                                      //       mapLocationUpdateController.markers11 = {};
-                                                      //       rideStartController.rideStartApi(context: context, requestId: widget.requestId.toString()).then((value) {
-                                                      //         Map<String, dynamic> decodedValue = json.decode(value);
-                                                      //         if(decodedValue["Result"] == true){
-                                                      //           socket.emit('Vehicle_Ride_Start_End',{
-                                                      //             'uid': getData.read("UserLogin")["id"].toString(),
-                                                      //             'c_id': requestDetailController.requestDetailModel!.requestData.cId.toString(),
-                                                      //             'request_id': widget.requestId.toString(),
-                                                      //           });
-                                                      //           remainingTime = 0;
-                                                      //           timer?.cancel();
-                                                      //           startTimerAdd();
-                                                      //           // requestDetailController.requestDetailApi(context: context, requestId: widget.requestId.toString());
-                                                      //           setState(() { });
-                                                      //           requestDetailController.requestDetailApi(requestId: widget.requestId).then((value) async{
-                                                      //             Map<String, dynamic> mapData = json.decode(value);
-                                                      //             print("++++++++++++++++ ${mapData}");
-                                                      //             // await mapLocationUpdateController.removeMarker('origin');
-                                                      //
-                                                      //             List<dynamic> dropOffPointsDynamic = mapData["request_data"]["drop_latlon"];
-                                                      //             print("------List------------- $dropOffPointsDynamic");
-                                                      //
-                                                      //             mapLocationUpdateController.dropOffPoints = dropOffPointsDynamic.map((item) {
-                                                      //               return PointLatLng(
-                                                      //                 double.parse(item["latitude"].toString()),
-                                                      //                 double.parse(item["longitude"].toString()),
-                                                      //               );
-                                                      //             }).toList();
-                                                      //
-                                                      //             print("++++++++++++++++latitude+++++++++++++++++++++ ${mapData["request_data"]["pick_latlon"]["latitude"]}");
-                                                      //             print("++++++++++++++longitude++++++++++++++ ${mapData["request_data"]["pick_latlon"]["longitude"]}");
-                                                      //             mapLocationUpdateController.startLiveTracking();
-                                                      //             // mapLocationUpdateController.addMarkercurrent(LatLng(double.parse(mapData["request_data"]["pick_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["pick_latlon"]["longitude"].toString()),),"origin",BitmapDescriptor.defaultMarker);
-                                                      //
-                                                      //             for (int a = 0; a < mapLocationUpdateController.dropOffPoints.length; a++) {
-                                                      //               mapLocationUpdateController.addMarker3("destination");
-                                                      //             }
-                                                      //
-                                                      //             // mapLocationUpdateController.addMarker2(LatLng(double.parse(pickLatLon["latitude"].toString()), double.parse(pickLatLon["longitude"].toString()),), 'destination');
-                                                      //
-                                                      //             mapLocationUpdateController.getDirections11(lat1: PointLatLng(double.parse(mapData["request_data"]["drop_latlon"]["latitude"].toString()), double.parse(mapData["request_data"]["drop_latlon"]["longitude"].toString())), dropOffPoints: mapLocationUpdateController.dropOffPoints,);
-                                                      //
-                                                      //             setState(() {
-                                                      //               rideStartController.isCircle = false;
-                                                      //             });
-                                                      //           });
-                                                      //         }else{
-                                                      //           snackBar(context: context, text: "Something Went Wrong");
-                                                      //           setState(() {
-                                                      //             rideStartController.isCircle = false;
-                                                      //           });
-                                                      //         }
-                                                      //       },);
-                                                      //     }
-                                                      // )
                                                       : requestDetailController
                                                                   .requestDetailModel!
                                                                   .requestData
@@ -1602,7 +1543,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                                 rideCancelController.isCircle = false;
                                                                               });
                                                                             } else {
-                                                                              snackBar(context: context, text: "Something Went Wrong");
+                                                                              snackBar(context: context, text: "Something Went Wrong".tr);
                                                                               setState(() {
                                                                                 rideCancelController.isCircle = false;
                                                                               });
@@ -1622,7 +1563,8 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                                       },
                                                                       child:
                                                                           Text(
-                                                                        'Swipe To End Ride',
+                                                                        'Swipe To End Ride'
+                                                                            .tr,
                                                                         style:
                                                                             TextStyle(
                                                                           fontSize:
@@ -1663,7 +1605,7 @@ class _MapRideScreenState extends State<MapRideScreen> {
                                                           //             rideCancelController.isCircle = false;
                                                           //           });
                                                           //         }else{
-                                                          //           snackBar(context: context, text: "Something Went Wrong");
+                                                          //           snackBar(context: context, text: "Something Went Wrong".tr  );
                                                           //           setState(() {
                                                           //             rideCancelController.isCircle = false;
                                                           //           });

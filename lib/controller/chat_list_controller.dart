@@ -12,7 +12,7 @@ class ChatListController extends GetxController implements GetxService {
   ChatListModel? chatListModel;
   bool isLoading = false;
 
-  Future chatListApi({required context,required String customer}) async{
+  Future chatListApi({required context, required String customer}) async {
     Map body = {
       "uid": getData.read("UserLogin")['id'],
       "sender_id": getData.read("UserLogin")['id'],
@@ -20,9 +20,13 @@ class ChatListController extends GetxController implements GetxService {
       "status": "driver" // customer, driver
     };
 
-    Map<String, String> userHeader = {"Content-type": "application/json", "Accept": "application/json"};
+    Map<String, String> userHeader = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
 
-    var response = await http.post(Uri.parse(Config.chatUrl + Config.chatList),body: jsonEncode(body),headers: userHeader);
+    var response = await http.post(Uri.parse(Config.chatUrl + Config.chatList),
+        body: jsonEncode(body), headers: userHeader);
 
     print("+++++++++++++++++ ${body}");
     print("+++++++++++++++++ ${response.body}");
@@ -42,7 +46,11 @@ class ChatListController extends GetxController implements GetxService {
         snackBar(context: context, text: "${data["message"]}");
       }
     } else {
-      snackBar(context: context, text: "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added.");
+      snackBar(
+          context: context,
+          text:
+              "Please update the content from the backend panel. It appears that the correct data was not uploaded, or there may be issues with the data that was added."
+                  .tr);
     }
   }
 }

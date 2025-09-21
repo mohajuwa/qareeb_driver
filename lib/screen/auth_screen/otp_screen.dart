@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:convert';
 
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_field_style.dart';
 import 'package:otp_text_field/style.dart';
+
 import 'package:qareeb/controller/login_controller.dart';
 import 'package:qareeb/screen/auth_screen/personal_info.dart';
 import 'package:qareeb/utils/colors.dart';
@@ -18,7 +20,10 @@ import '../../utils/font_family.dart';
 
 class OtpScreen extends StatefulWidget {
   late String otpCode;
-  OtpScreen({super.key, required this.otpCode});
+  OtpScreen({
+    Key? key,
+    required this.otpCode,
+  }) : super(key: key);
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();

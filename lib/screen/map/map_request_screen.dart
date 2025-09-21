@@ -2485,7 +2485,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                           scaffoldMessengerKey.currentState?.showSnackBar(
                             SnackBar(
                               content: Text(
-                                "Offer Send Successfully",
+                                "Offer Send Successfully".tr,
                                 style: TextStyle(
                                   fontFamily: FontFamily.sofiaProBold,
                                   fontSize: 14,
@@ -2562,7 +2562,7 @@ class _OfferingState extends State<Offering> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Your offer expired",
+              "Your offer expired".tr,
               style: TextStyle(
                 fontFamily: FontFamily.sofiaProBold,
                 fontSize: 14,
@@ -2574,7 +2574,7 @@ class _OfferingState extends State<Offering> with TickerProviderStateMixin {
                 scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
               },
               child: Text(
-                "SEND AGAIN",
+                "SEND AGAIN".tr,
                 style: TextStyle(
                   fontFamily: FontFamily.sofiaProBold,
                   fontSize: 14,
